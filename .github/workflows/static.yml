@@ -41,11 +41,6 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v5
-      - name: Replace Secrets in HTML
-        env:
-          # 환경 시크릿을 Actions 환경 변수로 가져옴
-          ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }} 
+      - name: Create .env file
         run: |
-          # sed 명령어로 __ACCESS_TOKEN__를 실제 값으로 치환
-          sed -i "s|__ACCESS_TOKEN__|$ACCESS_TOKEN|g" ./edit_content.html
-          sed -i "s|__ACCESS_TOKEN__|$ACCESS_TOKEN|g" ./index.html
+          echo "ACCESS_TOKEN=${{ secrets.ACCESS_TOKEN }}" >> .env
