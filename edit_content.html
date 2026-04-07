@@ -412,34 +412,33 @@
                 contentType: 'application/json',
                 success: function(response) {
                     SHA = response.sha;
+                    let ACCESS_TOKEN = prompt("ACCESS_TOKEN 값을 입력하세요.", "");
+                    jsonData = convertToJSON();  // JSON 데이터 저장 변수
+                    let payload = {
+                        message: "UPDATE 'practiceHTML5' JSON 데이터",
+                        content: window.btoa(unescape(encodeURIComponent( jsonData ))), // 데이터는 Base64로 인코딩
+                        branch: branch, // 저장할 브랜치
+                        sha: SHA // 업데이트할 파일의 SHA (파일이 이미 존재하는 경우 필요)
+                    };
+
+                    $.ajax({
+                        url: GITHUB_URL,
+                        method: 'PUT',
+                        contentType: 'application/json',
+                        headers: {
+                            'Authorization': `token ${ACCESS_TOKEN}`
+                        },
+                        data: JSON.stringify(payload),
+                        success: function(response) {
+                            console.log('Saved!', response);
+                        },
+                        error: function(e) {
+                            console.log("error:", e);
+                        }
+                    });
                 },
                 error: function(xhr, status, error) {
                     console.log("error:", error);
-                }
-            });
-
-            let ACCESS_TOKEN = propmt("ACCESS_TOKEN 값을 입력하세요.", "");
-            jsonData = convertToJSON();  // JSON 데이터 저장 변수
-            let payload = {
-                message: "UPDATE 'practiceHTML5' JSON 데이터",
-                content: window.btoa(unescape(encodeURIComponent( jsonData ))), // 데이터는 Base64로 인코딩
-                branch: branch, // 저장할 브랜치
-                sha: SHA // 업데이트할 파일의 SHA (파일이 이미 존재하는 경우 필요)
-            };
-
-            $.ajax({
-                url: GITHUB_URL,
-                method: 'PUT',
-                contentType: 'application/json',
-                headers: {
-                    'Authorization': `token ${ACCESS_TOKEN}`
-                },
-                data: JSON.stringify(payload),
-                success: function(response) {
-                    console.log('Saved!', response);
-                },
-                error: function(e) {
-                    console.log("error:", e);
                 }
             });
         }
