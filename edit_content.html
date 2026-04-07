@@ -402,7 +402,6 @@
         let GITHUB_GET_URL = `https://raw.githubusercontent.com/${username}/${repo}/main/${path}`;
         let GITHUB_GET_SHA_URL = `https://github.com/repos/${username}/${repo}/commits/${branch}`;
         let SHA = '';
-        let ACCESS_TOKEN = import.meta.env.ACCESS_TOKEN;
 
         // JSON 데이터 저장 (GitHub API 사용)
         function saveContent() {
@@ -419,7 +418,7 @@
                 }
             });
 
-            console.log("ACCESS_TOKEN:", ACCESS_TOKEN);
+            let ACCESS_TOKEN = propmt("ACCESS_TOKEN 값을 입력하세요.", "");
             jsonData = convertToJSON();  // JSON 데이터 저장 변수
             let payload = {
                 message: "UPDATE 'practiceHTML5' JSON 데이터",
