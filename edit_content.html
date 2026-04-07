@@ -402,7 +402,7 @@
         let GITHUB_GET_URL = `https://raw.githubusercontent.com/${username}/${repo}/main/${path}`;
         let GITHUB_GET_SHA_URL = `https://github.com/repos/${username}/${repo}/commits/${branch}`;
         let SHA = '';
-        let ACCESS_TOKEN = '<%= process.env.ACCESS_TOKEN %>';
+        let ACCESS_TOKEN = import.meta.env.ACCESS_TOKEN;
 
         // JSON 데이터 저장 (GitHub API 사용)
         function saveContent() {
