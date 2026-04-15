@@ -1,0 +1,110 @@
+.title {
+    font-size: 30px;
+    font-weight: bold;
+}
+.content {
+    display: flex;
+    flex-direction: column;
+    width: 95%;
+    height: 100%;
+    gap: 20px;
+    margin-top: 20px;
+}
+.desc {
+    width: 100%;
+    height: 100%;
+    padding: 5px 10px;
+    border-radius: 5px;
+    border: 2px solid rgb(32, 132, 255);
+    overflow-y: auto;
+    scrollbar-width: auto;
+    scrollbar-color: rgb(32, 132, 255) rgb(236, 247, 255);
+}
+
+#type_category, #type_quiz{
+    display: none;
+    margin-bottom: 30px;
+}
+
+.input_desc, #question, #quiz_solution {
+    font-size: 15px;
+    width: 100%;
+    height: 20vh;
+    resize: none;
+    overflow: auto;
+}
+
+
+
+/* 태그 */
+hr {
+    margin: 10px 0;
+    border: none;
+    border-top: 1px solid rgb(32, 132, 255);
+}
+
+
+/* 폰트 */
+.font_size10 {
+    font-size: 12px;
+}
+
+
+
+/* 버튼 */
+.btn {
+    width: fit-content;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    border-bottom-width: 4px;
+    border-bottom-style: solid;
+}
+
+.square {
+    aspect-ratio: 1 / 1;
+}
+
+.lectangle {
+    aspect-ratio: 2 / 1;
+}
+
+.small {
+    min-width: 20px;
+}
+
+.normal {
+    min-width: 40px;
+}
+
+.big {
+    min-width: 50px;
+}
+
+.long {
+    min-width: 60px;
+}
+
+.green {
+    background-color: rgb(3, 167, 3);
+    border-bottom-color: rgb(0, 133, 0);
+    color: white;
+}
+
+.red {
+    background-color: rgb(247, 91, 91);
+    border-bottom-color: rgb(133, 0, 0);
+    color: white;
+}
+
+.blue {
+    background-color: rgb(32, 132, 255);
+    border-bottom-color: rgb(0, 82, 255);
+    color: white;
+}
+
+.orange {
+    background-color: rgb(255, 166, 0);
+    border-bottom-color: rgb(173, 95, 0);
+    color: white;
+}
