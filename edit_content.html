@@ -17,6 +17,9 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/mode/javascript/javascript.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/mode/css/css.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/mode/htmlmixed/htmlmixed.min.js"></script>
+    <!-- 리스트 드래그 앤 드롭 -->
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
     <!-- jstree -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.3.17/jstree.min.js" integrity="sha512-Rzhxh2sskKwa+96nRopp/hvGexBzEPG6mnFI6uRy059FZfksJJFYmqDFn050KUDhivXLsT6SvoaEf5iSp2SHjg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script>
@@ -56,6 +59,14 @@
                     $("#type_quiz").show();
                 }
             });
+
+            $("#type_category ul").sortable({
+                connectWith: "ul",
+                items: "li",          // 하위 자손 li까지 모두 선택
+                placeholder: "ui-state-highlight", // 자리 표시자
+                tolerance: "pointer", // 마우스 포인터 기반으로 드래그
+                cursor: "move"
+            }).disableSelection();
 
 
             // 퀴즈 유형 선택
@@ -136,35 +147,6 @@
                     lastOptionInput.prev('span').show();
                 }
             });
-            
-
-
-            // $.ajax({
-            //     url: GITHUB_URL,
-            //     type: 'GET',
-            //     dataType: 'json',
-            //     success: function(data) {
-            //         console.log('success');
-            //         if (data && data.length > 0) {
-            //             console.log('데이터가 존재합니다.', data);
-            //             jsonData = data;
-                        
-            //             // 단원 목록 리스트 정리 쿼리 작성하기
-
-            //         } else {
-            //             console.log('데이터가 비어있습니다.');
-            //             jsonData = {};
-            //         }
-            //     },
-            //     error: function(xhr, status, error) {
-            //         if (xhr.status === 404) {
-            //             console.log("404 오류: json 파일이 존재하지 않습니다. 새 파일을 생성합니다.");
-            //             jsonData = {};
-            //         } else {
-            //             console.error("기타 오류 발생:", status, error);
-            //         }
-            //     }
-            // });
         });
 
         // 버튼 클릭 효과
@@ -188,61 +170,58 @@
 
         // 목차 수정 관련
         // 단원 추가
-        let chapterNum = 1;
+        let chapterNum;
         function addChapter(i) {
             let chapter = 
-            `<li id="chapterList_${chapterNum}">
+            `<li class="sortable" id="chapterList_${chapterNum}">
                 <div class="chapter_group">
                     <input type="text" class="chapter_title" name="chapter" placeholder="제목">
-                    <input type="text" class="chapter_page" name="chapter_page" placeholder="페이지">
-                    <button class="btn orange small square" title="단원 위로 옮기기" onclick="moveUpChapter(${chapterNum})">↑</button>
-                    <button class="btn orange small square" title="단원 아래로 옮기기" onclick="moveDownChapter(${chapterNum})">↓</button>
+                    <input type="text" class="chapter_page" name="chapter_page" placeholder="페이지" disabled>
                     <button class="btn blue small square" title="소제목 추가" onclick="addChapter(${chapterNum})">+</button>
                     <button class="btn red small square" title="단원 제거" onclick="deleteChapter(${chapterNum})">-</button>
+                    <button class="btn orange small lectangle" title="수정" onclick="editChapter(${chapterNum})">수정</button>
                 </div>
+                <ul id="chapterUL_${chapterNum}"></ul>
             </li>`;
 
             if (i === undefined) {
                 $("#chapterUL_0").append(chapter);
             } else {
-                if ($(`#chapterList_${i}`).children("ul").length === 0) {
-                    $(`#chapterList_${i}`).append(`<ul id="chapterUL_${chapterNum}">${chapter}</ul>`);
-                } else {
-                    $(`#chapterList_${i}`).children("ul").append(chapter);
-                }
+                $(`#chapterUL_${i}`).append(chapter);
             }
 
             chapterNum++;
 
         }
 
+        function editChapter(i, type) {
+            let btn = $(`#chapterList_${i}>div>button:last-child`);
+            let inputs = $(`#chapterList_${i}`).children("div").children("input");
+
+            if ($(inputs[0]).prop('disabled')) {
+                $(inputs).each(function(idx, element) {
+                    $(element).attr("disabled", false); 
+                });
+                btn.text("완료");
+                btn.attr("title", "수정 완료");
+            } else {
+                $(inputs).each(function(idx, element) {
+                   $(element).attr("disabled", true); 
+                });
+                btn.text("수정");
+                btn.attr("title", "수정");
+            }
+        }
+
         function deleteChapter(i) {
             let liElement = $(`#chapterList_${i}`);
-            if ($(`#chapterUL_${i}`).children("li").length === 1) {
-               $(`#chapterUL_${i}`).remove();
-            } else {
-                liElement.remove();
+            if ($(`#chapterUL_${i}`).children("li").length > 1) {
+                if(!confirm("하위 리스트도 함께 제거됩니다.\n삭제하시겠습니까?")){
+                    return;
+                }
             }
-            
+            liElement.remove();
             chapterNum--;
-        }
-
-        function moveUpChapter(i) {
-            let liElement = $(`#chapterList_${i}`);
-            if (liElement.is(":first-child")) {
-                return;
-            }
-
-            liElement.insertBefore(liElement.prev("li"));
-        }
-
-        function moveDownChapter(i) {
-            let liElement = $(`#chapterList_${i}`);
-            if (liElement.is(":last-child")) {
-                return;
-            }
-
-            liElement.insertAfter(liElement.next("li"));
         }
 
 
@@ -431,9 +410,11 @@
                         data: JSON.stringify(payload),
                         success: function(response) {
                             console.log('Saved!', response);
+                            alert("저장 완료!");
                         },
                         error: function(e) {
                             console.log("error:", e);
+                            error("저장 실패!");
                         }
                     });
                 },
@@ -449,44 +430,38 @@
                 method: 'GET',
                 dataType: 'json',
                 success: function(data) {
-                    // console.log('success');
                     if (data && data.length > 0) {
-                        // console.log('데이터가 존재합니다.', data);
-                        if (data && data.length > 0) {
-                            // console.log('데이터가 존재합니다.', data);
-                            // 단원 목록 리스트 정리 쿼리 작성하기
-                            data.sort((a, b) => a.id - b.id); // ID 기준으로 정렬
-                            data.forEach(item => {
-                                // console.log("item:", item.id, item.parentId, item.name, item.page);
-                                if (item.parentId != 0 && $(`#chapterList_${item.parentId}`).length === 0) {
-                                        item.parentId--;
-                                        // console.log("parentId: ", item.parentId);
-                                    }
-
-                                if ($(`#chapterUL_${item.parentId}`).length === 0) {
-                                    
-                                    $(`#chapterList_${item.parentId}`).append(`<ul id="chapterUL_${item.parentId}"></ul>`);
-                                    // console.log($(`#chapterList_${item.parentId}`).html());
+                        chapterNum = data.length + 1;
+                        // 단원 목록 리스트 정리 쿼리 작성하기
+                        data.sort((a, b) => a.id - b.id); // ID 기준으로 정렬
+                        data.forEach(item => {
+                            // console.log("item:", item.id, item.parentId, item.name, item.page);
+                            if (item.parentId != 0 && $(`#chapterList_${item.parentId}`).length === 0) {
+                                    item.parentId--;
+                                    // console.log("parentId: ", item.parentId);
                                 }
-                                
-                                let chapter = 
-                                `<li id="chapterList_${item.id}">
-                                    <div class="chapter_group">
-                                        <input type="text" class="chapter_title" name="chapter" value="${item.name}" placeholder="제목">
-                                        <input type="text" class="chapter_page" name="chapter_page" value="${item.page}" placeholder="페이지">
-                                        <button class="btn orange small square" title="단원 위로 옮기기" onclick="moveUpChapter(${item.id})">↑</button>
-                                        <button class="btn orange small square" title="단원 아래로 옮기기" onclick="moveDownChapter(${item.id})">↓</button>
-                                        <button class="btn blue small square" title="소제목 추가" onclick="addChapter(${item.id})">+</button>
-                                        <button class="btn red small square" title="단원 제거" onclick="deleteChapter(${item.id})">-</button>
-                                    </div>
-                                </li>`
-                                $(`#chapterUL_${item.parentId}`).append(chapter);
-                                // console.log($(`#chapterList_${item.parentId}`).html());
-                            });
-                        }
-                    }
 
-                    // console.log('데이터가 비어있습니다.');
+                            // if ($(`#chapterUL_${item.parentId}`).length === 0) {
+                                
+                            //     $(`#chapterList_${item.parentId}`).append(`<ul id="chapterUL_${item.parentId}"></ul>`);
+                            //     // console.log($(`#chapterList_${item.parentId}`).html());
+                            // }
+                            item.id++;
+                            let chapter = 
+                            `<li id="chapterList_${item.id}">
+                                <div class="chapter_group">
+                                    <input type="text" class="chapter_title" name="chapter" value="${item.name}" placeholder="제목" disabled>
+                                    <input type="text" class="chapter_page" name="chapter_page" value="${item.page}" placeholder="페이지" disabled>
+                                    <button class="btn blue small square" title="소제목 추가" onclick="addChapter(${item.id})">+</button>
+                                    <button class="btn red small square" title="단원 제거" onclick="deleteChapter(${item.id})">-</button>
+                                    <button class="btn orange small lectangle" title="수정" onclick="editChapter(${item.id})">수정</button>
+                                </div>
+                                <ul id="chapterUL_${item.id}"></ul>
+                            </li>`
+                            $(`#chapterUL_${item.parentId}`).append(chapter);
+                            // console.log($(`#chapterList_${item.parentId}`).html());
+                        });
+                    }
                 },
                 error: function(xhr, status, error) {
                     if (xhr.status === 404) {
@@ -537,6 +512,10 @@
             padding: 5px 10px;
             border-radius: 5px;
             margin-bottom: 10px;
+        }
+
+        .sortable {
+            cursor: pointer;
         }
         
         #type_category .chapter_title{
@@ -786,7 +765,7 @@
         <div class="desc">
             <div id="type_category">
                 <span>단원 추가</span><button class="btn blue small square" id="add_chapter" title="단원 추가" onclick="addChapter()">+</button>
-                <ul id="chapterUL_0">
+                <ul class="level_0" id="chapterUL_0">
                     <!-- 단원 목록이 추가될 영역 -->
                 </ul>
             </div>
