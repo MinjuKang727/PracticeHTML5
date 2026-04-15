@@ -1,4 +1,3 @@
-let jsonData = {}; // JSON 데이터 저장 변수
 let myCodeMirror; // CodeMirror 인스턴스를 전역 변수로 선언
 
 
