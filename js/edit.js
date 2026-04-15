@@ -1,6 +1,7 @@
 $(document).ready(function() {
     // 수정 유형 선택
-    $("input[name=edit_type]").change(function() {
+    $("input[name=edit_type]").on('change', function() {
+        console.log("change type");
         let selectedType = $(this).val();
 
         if (selectedType === "category") {
