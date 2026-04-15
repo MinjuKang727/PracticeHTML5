@@ -1,0 +1,62 @@
+.image {
+    width: 100%;
+    height: 35px;
+    margin: 15px 0;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.img_input {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    padding: 5px 10px;
+}
+
+.image img {
+    max-height: 80%;
+    width: auto;
+    object-fit: contain;
+    margin: 10px 0;
+    display: none;
+}
+
+.img_length {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 5px;
+    display: none;
+    background-color: rgb(228, 234, 238);
+    border-radius: 5px;
+    padding: 5px 10px;
+}
+
+.img_length_input {
+    width: 60px;
+}
+
+#options {
+    margin: 15px 0;
+    max-height: 100%;
+    width: auto;
+}
+
+.quiz_op {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+}
+
+.op_group {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 5px;
+}
+
+.last_option_input {
+    display: none;
+}
