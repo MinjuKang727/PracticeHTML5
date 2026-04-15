@@ -1,5 +1,3 @@
-let jsonData = {}; // JSON 데이터 저장 변수
-
 $(document).ready(function() {
     // 리스트 드래그 앤 드롭으로 옮기기
     $("#type_category ul").sortable({

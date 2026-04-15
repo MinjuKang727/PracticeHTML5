@@ -1,5 +1,3 @@
-let jsonData = {}; // JSON 데이터 저장 변수
-
 $(document).ready(function() {
     // 퀴즈 유형 선택
     $("input[name=quiz_type]").change(function() {
