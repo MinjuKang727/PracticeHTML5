@@ -32,10 +32,10 @@ $("button").mousedown(function() {
     bgColor = $(this).css("background-color");
     bottomColor = $(this).css("border-bottom");
     bottomWidth = $(this).css('border-bottom-width');
-    console.log("borderBottomWidth:",bottomWidth);
-    console.log("bgcolor:", bgColor, "bottomColor:", bottomColor, "bottomWidth:", bottomWidth);
+    // console.log("borderBottomWidth:",bottomWidth);
+    // console.log("bgcolor:", bgColor, "bottomColor:", bottomColor, "bottomWidth:", bottomWidth);
     $(this).css("border-bottom", "none");
-    $(this).css("margin-top", bottomWidth);
+    $(this).css("margin-top", bottomWidth-1);
 }).mouseup(function() {
     $(this).css("border-bottom", bottomColor);   
     $(this).css("margin-top", "0");
