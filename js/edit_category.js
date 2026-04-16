@@ -7,7 +7,43 @@ $(document).ready(function() {
         tolerance: "pointer", // 마우스 포인터 기반으로 드래그
         cursor: "move"
     }).disableSelection();
+
+    $("input[name='multi_select']").on("change", function() {
+        if ($(this).is(":checked")) {
+            $("#multi_select > span > span").show();
+            $("input[name='select_moving']").each(function() {
+                $(this).show();
+            });
+        } else {
+            $("#multi_select > span > span").hide();
+            $("input[name='select_moving']").each(function() {
+                $(this).hide();
+            });
+            $("input[name='select_moving']").prop("checked", false);
+        }
+    })
 });
+
+function selectMoving(i) {
+    let checked = $("input[name='select_moving']:checked");
+    let ckCnt = $(checked).length;
+    let checkbox = $(`#chapterList_${i} > div > input[name='select_moving']`);
+
+    if (ckCnt >= 3) {
+        alert("체크는 2개까지 할 수 있습니다.\n묶음으로 이동할 리스트의 '처음'과 '마지막' 리스트만 체크해 주세요.");
+        $(checkbox).prop("checked", false);
+    } else if (!$(checkbox).is(":checked")){
+        $("input[name='select_moving']").parent("div").css('background-color', '');
+        $(checked).parent("div").css('background-color', 'pink');
+    } else if (ckCnt === 2) {
+        let start = $(checked).first().parent("div").parent("li");
+        let end = $(checked).last().parent("div").parent("li")
+        $(start).nextUntil(end).children("div").css('background-color', 'pink');
+    } else {
+        $(checked).parent("div").css('background-color', 'pink');
+    }
+}
+
 
 // 단원 추가
 let chapterNum;
@@ -20,6 +56,7 @@ function addChapter(i) {
             <button class="btn blue small square" title="소제목 추가" onclick="addChapter(${chapterNum})">+</button>
             <button class="btn red small square" title="단원 제거" onclick="deleteChapter(${chapterNum})">-</button>
             <button class="btn orange small lectangle" title="수정 완료" onclick="editChapter(${chapterNum})">완료</button>
+            <input type="checkbox" name="select_moving" onclick="selectMoving(${chapterNum})"/>
         </div>
         <ul id="chapterUL_${chapterNum}"></ul>
     </li>`;
@@ -36,7 +73,7 @@ function addChapter(i) {
 // 단원명, 페이지 input박스 활성, 비활성
 function editChapter(i, type) {
     let btn = $(`#chapterList_${i}>div>button:last-child`);
-    let inputs = $(`#chapterList_${i}`).children("div").children("input");
+    let inputs = $(`#chapterList_${i}`).children("div").children("input[name='text']");
 
     if ($(inputs[0]).prop('disabled')) {
         $(inputs).each(function(idx, element) {

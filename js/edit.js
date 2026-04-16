@@ -1,7 +1,6 @@
 $(document).ready(function() {
     // 수정 유형 선택
-    $("input[name=edit_type]").on('change', function() {
-        console.log("change type");
+    $("input[name=edit_type]").on('click', function() {
         let selectedType = $(this).val();
 
         if (selectedType === "category") {
@@ -19,9 +18,20 @@ $(document).ready(function() {
             $("#type_quiz").show();
         }
     });
+
+    $(".check_input, .checkInput_info").on("click", function() {
+        if ($(this).is(".checkInput_info")) {
+            let checkInput;
+            if ($(this).is(".left")) {
+                checkInput = $(this).prev(".check_input");
+            } else {
+                checkInput = $(this).next(".check_input");
+            }
+
+            $(checkInput).trigger("click");
+        }
+    })
 });
-
-
 
 // 버튼 클릭 효과
 let bgColor;
@@ -170,6 +180,7 @@ function getContent() {
                             <button class="btn blue small square" title="소제목 추가" onclick="addChapter(${item.id})">+</button>
                             <button class="btn red small square" title="단원 제거" onclick="deleteChapter(${item.id})">-</button>
                             <button class="btn orange small lectangle" title="수정" onclick="editChapter(${item.id})">수정</button>
+                            <input type="checkbox" name="select_moving" onclick="selectMoving(${item.id})"/>
                         </div>
                         <ul id="chapterUL_${item.id}"></ul>
                     </li>`

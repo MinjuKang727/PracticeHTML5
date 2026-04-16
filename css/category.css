@@ -11,6 +11,29 @@
     vertical-align: top;
 }
 
+#multi_select {
+    display:flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    align-items:flex-start;
+}
+
+#multi_select span {
+    text-align:right;
+}
+
+#multi_select > span > span {
+    display:none;
+}
+
+.chapter_group {
+    width: fit-content;
+}
+
+input[name=select_moving] {
+    display: none;
+}
+
 #type_category .chapter_title{
     width: 200px;
 }

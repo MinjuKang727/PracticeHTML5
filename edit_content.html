@@ -39,9 +39,9 @@
         <span class="title">Practice HTML5</span>
     </div>
     <div id="edit_type"><span>수정 유형: </span>
-            <input type="radio" name="edit_type" value="category"/>목차
-            <input type="radio" name="edit_type" value="code" checked/>예제 코드
-            <input type="radio" name="edit_type" value="quiz"/>퀴즈
+            <input type="radio" class="check_input" name="edit_type" value="category"/><span class="checkInput_info left">목차</span>
+            <input type="radio" class="check_input" name="edit_type" value="code" checked/><span class="checkInput_info left">예제 코드</span>
+            <input type="radio" class="check_input" name="edit_type" value="quiz"/><span class="checkInput_info left">퀴즈</span>
     </div>
     
     <div class="content">
@@ -49,7 +49,12 @@
             <div id="type_category">
                 <div id="category_header">
                 <div><span>단원 추가</span><button class="btn blue small square" id="add_chapter" title="단원 추가" onclick="addChapter()">+</button></div>
-                <div><input type="checkbox" id="multi_select" name="multi_select" checked/> <span class="font_size10">여러 챕터 동시에 선택옮서 옮기기</span></div>
+                <div id="multi_select">
+                    <span class="font_size10 checkInput_info right">여러 챕터 동시에 선택해서 옮기기
+                        <span class="ft_gray"><br>(함께 이동할 리스트의 '처음'과 '마지막' 리스트만 선택하세요.)</span>
+                    </span>
+                    <input type="checkbox" class="check_input" name="multi_select" />
+                </div>
                 </div>
                 <ul class="level_0" id="chapterUL_0">
                     <!-- 단원 목록이 추가될 영역 -->
@@ -89,8 +94,8 @@
 
             <div id="type_quiz">
                 <div class="quiz_type">
-                    <input type="radio" name="quiz_type" value="objective" checked/><span> 객관식</span>
-                    <input type="radio" name="quiz_type" value="subjective"/><span> 주관식</span>
+                    <input type="radio" class="check_input" name="quiz_type" value="objective" checked/><span  class="checkInput_info left"> 객관식</span>
+                    <input type="radio" class="check_input" name="quiz_type" value="subjective"/><span class="checkInput_info left"> 주관식</span>
                 </div>
                 <div class="image">
                     <div class="img_input">
@@ -118,7 +123,7 @@
                     <div class="op_group"><span>4. </span><input type="text" class="quiz_op" placeholder="선택지 4"></div>
 
                     <div class="last_option op_group">
-                        <input type="checkbox" name="add_option" value="add_option"/><span> 선택지 추가</span> 
+                        <input type="checkbox" class="check_input" name="add_option" value="add_option"/><span class="checkInput_info left"> 선택지 추가</span> 
                         <div class="last_option_input"><span>5. </span><input type="text" class="quiz_op" placeholder="선택지 5"></div>
                     </div>
                 </div>
@@ -126,11 +131,11 @@
                 <div id="solution">
                     <span>정답: </span>
                     <div id="answer_options">
-                        <input type="radio" name="answer" value="1"/><span>①</span>
-                        <input type="radio" name="answer" value="2"/><span>②</span>
-                        <input type="radio" name="answer" value="3"/><span>③</span>
-                        <input type="radio" name="answer" value="4"/><span>④</span>
-                        <input type="radio" name="answer" value="5"/><span>⑤</span>
+                        <input type="radio" class="check_input" name="answer" value="1"/><span class="checkInput_info left">①</span>
+                        <input type="radio" class="check_input" name="answer" value="2"/><span class="checkInput_info left">②</span>
+                        <input type="radio" class="check_input" name="answer" value="3"/><span class="checkInput_info left">③</span>
+                        <input type="radio" class="check_input" name="answer" value="4"/><span class="checkInput_info left">④</span>
+                        <input type="radio" class="check_input" name="answer" value="5"/><span class="checkInput_info left">⑤</span>
                     </div>
                     <div class="image">
                         <div class="img_input">
