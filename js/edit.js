@@ -84,7 +84,7 @@ function convert2JSON() {
                 let thisNth = $(this).index();
                 let thisTitle = $(this).children("div").children(".chapter_title").val();
                 let thisPage = $(this).children("div").children(".chapter_page").val();
-                let thisJSON = {"id":thisID, "parentId": parentID, "nthChild": thisNth, "name": thisTitle, "page": thisPage};
+                let thisJSON = {"id":thisID, "parentID": parentID, "nthChild": thisNth, "name": thisTitle, "page": thisPage};
                 data.push(thisJSON);
             });
         });
@@ -109,7 +109,7 @@ let SHA = '';
 // JSON 데이터 저장 (GitHub API 사용)
 function saveContent() {
     if ($("input[name='multi_select']").is(":checked")) {
-        alert("'단원 재정렬'을 체크 해제한 후 SAVE 버튼을 눌러주세요.");
+        alert("'단원 재정렬'을 체크 해제한 후, SAVE 버튼을 눌러주세요.");
         return;
     }
 
@@ -119,7 +119,6 @@ function saveContent() {
         method: 'GET',
         contentType: 'application/json',
         success: function(response) {
-            console.log(response);
             SHA = response.sha;
             let ACCESS_TOKEN = prompt("ACCESS_TOKEN 값을 입력하세요.", "");
             jsonData = convert2JSON();  // JSON 데이터 저장 변수
@@ -166,18 +165,6 @@ function getContent() {
                 // 단원 목록 리스트 정리 쿼리 작성하기
                 data.sort((a, b) => a.id - b.id); // ID 기준으로 정렬
                 data.forEach(item => {
-                    // console.log("item:", item.id, item.parentId, item.name, item.page);
-                    if (item.parentId != 0 && $(`#chapterList_${item.parentId}`).length === 0) {
-                            item.parentId--;
-                            // console.log("parentId: ", item.parentId);
-                        }
-
-                    // if ($(`#chapterUL_${item.parentId}`).length === 0) {
-                        
-                    //     $(`#chapterList_${item.parentId}`).append(`<ul id="chapterUL_${item.parentId}"></ul>`);
-                    //     // console.log($(`#chapterList_${item.parentId}`).html());
-                    // }
-                    item.id++;
                     let chapter = 
                     `<li id="chapterList_${item.id}">
                         <div class="chapter_group">
@@ -189,8 +176,7 @@ function getContent() {
                         </div>
                         <ul id="chapterUL_${item.id}"></ul>
                     </li>`
-                    $(`#chapterUL_${item.parentId}`).append(chapter);
-                    // console.log($(`#chapterList_${item.parentId}`).html());
+                    $(`#chapterUL_${item.parentID}`).append(chapter);
                 });
             }
         },
