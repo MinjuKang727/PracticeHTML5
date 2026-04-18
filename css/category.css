@@ -26,8 +26,15 @@
     display:none;
 }
 
+/* SortableJS */
+.sortable-selected > div {
+  background-color: #f9c7c8;
+  border: solid red 1px;
+}
+
 .chapter_group {
     width: fit-content;
+    padding-right: 20px;
 }
 
 input[name=select_moving] {

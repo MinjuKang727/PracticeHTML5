@@ -1,4 +1,24 @@
 $(document).ready(function() {
+    // 버튼 클릭 효과
+    let bgColor;
+    let bottomColor;
+    let bottomWidth;
+
+    $("button").mousedown(function() {
+        console.log("btn mousedown");
+        bgColor = $(this).css("background-color");
+        bottomColor = $(this).css("border-bottom");
+        bottomWidth = $(this).css('border-bottom-width');
+        // console.log("borderBottomWidth:",bottomWidth);
+        // console.log("bgcolor:", bgColor, "bottomColor:", bottomColor, "bottomWidth:", bottomWidth);
+        $(this).css("border-bottom", "none");
+        $(this).css("margin-top", bottomWidth-1);
+    }).mouseup(function() {
+        $(this).css("border-bottom", bottomColor);   
+        $(this).css("margin-top", "0");
+    });
+
+
     // 수정 유형 선택
     $("input[name=edit_type]").on('click', function() {
         let selectedType = $(this).val();
@@ -32,26 +52,6 @@ $(document).ready(function() {
         }
     })
 });
-
-// 버튼 클릭 효과
-let bgColor;
-let bottomColor;
-let bottomWidth;
-
-$("button").mousedown(function() {
-    bgColor = $(this).css("background-color");
-    bottomColor = $(this).css("border-bottom");
-    bottomWidth = $(this).css('border-bottom-width');
-    // console.log("borderBottomWidth:",bottomWidth);
-    // console.log("bgcolor:", bgColor, "bottomColor:", bottomColor, "bottomWidth:", bottomWidth);
-    $(this).css("border-bottom", "none");
-    $(this).css("margin-top", bottomWidth-1);
-}).mouseup(function() {
-    $(this).css("border-bottom", bottomColor);   
-    $(this).css("margin-top", "0");
-});
-
-
 
 
 
@@ -180,7 +180,6 @@ function getContent() {
                             <button class="btn blue small square" title="소제목 추가" onclick="addChapter(${item.id})">+</button>
                             <button class="btn red small square" title="단원 제거" onclick="deleteChapter(${item.id})">-</button>
                             <button class="btn orange small lectangle" title="수정" onclick="editChapter(${item.id})">수정</button>
-                            <input type="checkbox" name="select_moving" onclick="selectMoving(${item.id})"/>
                         </div>
                         <ul id="chapterUL_${item.id}"></ul>
                     </li>`

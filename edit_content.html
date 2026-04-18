@@ -21,6 +21,10 @@
     <link href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css" rel="stylesheet" type="text/css" />
     <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <!-- sortableJS -->
+    <script src="http://SortableJS.github.io/Sortable/Sortable.js"></script>
+     <!-- <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script> -->
+
     <!-- jstree -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.3.17/jstree.min.js" integrity="sha512-Rzhxh2sskKwa+96nRopp/hvGexBzEPG6mnFI6uRy059FZfksJJFYmqDFn050KUDhivXLsT6SvoaEf5iSp2SHjg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <!-- js -->
@@ -50,9 +54,7 @@
                 <div id="category_header">
                 <div><span>단원 추가</span><button class="btn blue small square" id="add_chapter" title="단원 추가" onclick="addChapter()">+</button></div>
                 <div id="multi_select">
-                    <span class="font_size10 checkInput_info right">여러 챕터 동시에 선택해서 옮기기
-                        <span class="ft_gray"><br>(함께 이동할 리스트의 '처음'과 '마지막' 리스트만 선택하세요.)</span>
-                    </span>
+                    <span class="font_size10 checkInput_info right" title="단원의 위치를 옮기고 싶을 때, 체크하세요.&#10;(옮길 단원을 드래그 앤 드롭하여 원하는 위치로 옮기세요.)">단원 재정렬</span>
                     <input type="checkbox" class="check_input" name="multi_select" />
                 </div>
                 </div>
