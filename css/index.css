@@ -34,6 +34,10 @@
     overflow: auto;
 }
 
+.checkInput_info, input[type=checkbox], input[type=radio]:hover {
+    cursor: pointer;
+}
+
 
 
 /* 태그 */
@@ -42,13 +46,18 @@ hr {
     border: none;
     border-top: 1px solid rgb(32, 132, 255);
 }
-
+ 
 
 /* 폰트 */
 .font_size10 {
     font-size: 12px;
 }
 
+
+/* 폰트 색 */
+.ft_gray {
+    color: gray;
+}
 
 
 /* 버튼 */

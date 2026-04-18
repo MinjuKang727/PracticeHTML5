@@ -1,6 +1,6 @@
 $(document).ready(function() {
     // 퀴즈 유형 선택
-    $("input[name=quiz_type]").change(function() {
+    $("input[name=quiz_type]").on("click", function() {
         let parent = $("#type_quiz");
         clearFileInput("quiz_img_dir");
         clearFileInput("answer_img_dir");
