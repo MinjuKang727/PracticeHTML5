@@ -27,7 +27,7 @@
 }
 
 /* SortableJS */
-.sortable-selected > div {
+.sortable-selected {
   background-color: #f9c7c8;
   border: solid red 1px;
 }

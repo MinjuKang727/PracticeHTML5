@@ -5,7 +5,6 @@ $(document).ready(function() {
     let bottomWidth;
 
     $("button").mousedown(function() {
-        console.log("btn mousedown");
         bgColor = $(this).css("background-color");
         bottomColor = $(this).css("border-bottom");
         bottomWidth = $(this).css('border-bottom-width');
@@ -60,36 +59,36 @@ $(document).ready(function() {
 let jsonData = {}; // JSON 데이터 저장 변수
 
 // JSON 데이터로 변환
-function convertToJSON() {
+function convert2JSON() {
     setChapterId();
     let thisType = $("input[name=edit_type]:checked").val();
     let idMap = {};
-    if (thisType === "category") {
+    if (thisType === "category") {  // 목차 데이터 to JSON 변환
         let data = [];
         let idCounter = 0; // 고유 ID를 위한 카운터
-        $("#type_category").find("ul").each(function() {  // type_category 하위의 모든 ul 태그 찾기
-            // let parentId = parseInt($(this).attr("id").split("_")[1]);
-            let parentId = idCounter++;
-            idMap[$(this).attr("id").split("_")[1]] = parentId;
+
+        $("#type_category ul").each(function() {
+            let ori_ULID = $(this).attr("id").split("_")[1];
+            let parentID;
+            if (idMap.hasOwnProperty(ori_ULID)) {
+                parentID = idMap[ori_ULID];
+            } else {
+                idMap[ori_ULID] = idCounter++;
+                parentID = idMap[ori_ULID]
+            }
 
             $(this).children("li").each(function() {
-                // let thisId = parseInt($(this).attr("id").split("_")[1]) - 1;
-                let thisParentId = $(this).parent("ul").attr("id").split("_")[1];
-                if (idMap.hasOwnProperty(thisParentId)) {
-                    thisParentId = idMap[thisParentId];
-                }
-                let thisId = idCounter++;
+                let ori_ListID = $(this).attr("id").split("_")[1];
+                idMap[ori_ListID] = idCounter++;
+                let thisID = idMap[ori_ListID];
                 let thisNth = $(this).index();
                 let thisTitle = $(this).children("div").children(".chapter_title").val();
                 let thisPage = $(this).children("div").children(".chapter_page").val();
-                let thisJson = {"id":thisId, "parentId": thisParentId, "nthChild": thisNth, "name": thisTitle, "page": thisPage};
-                data.push(thisJson);
+                let thisJSON = {"id":thisID, "parentId": parentID, "nthChild": thisNth, "name": thisTitle, "page": thisPage};
+                data.push(thisJSON);
             });
-            
-            // 단원 제목과 페이지 정보 저장 로직 작성
         });
         return JSON.stringify(data);
-        // 목차 데이터 변환 로직 작성
     } else if (thisType === "code") {
         // 예제 코드 데이터 변환 로직 작성
     } else if (thisType === "quiz") {
@@ -109,15 +108,21 @@ let SHA = '';
 
 // JSON 데이터 저장 (GitHub API 사용)
 function saveContent() {
+    if ($("input[name='multi_select']").is(":checked")) {
+        alert("'단원 재정렬'을 체크 해제한 후 SAVE 버튼을 눌러주세요.");
+        return;
+    }
+
     // 최신 커밋 SHA 가져오기
     $.ajax({
         url: GITHUB_URL,
         method: 'GET',
         contentType: 'application/json',
         success: function(response) {
+            console.log(response);
             SHA = response.sha;
             let ACCESS_TOKEN = prompt("ACCESS_TOKEN 값을 입력하세요.", "");
-            jsonData = convertToJSON();  // JSON 데이터 저장 변수
+            jsonData = convert2JSON();  // JSON 데이터 저장 변수
             let payload = {
                 message: "UPDATE 'practiceHTML5' JSON 데이터",
                 content: window.btoa(unescape(encodeURIComponent( jsonData ))), // 데이터는 Base64로 인코딩
@@ -125,6 +130,7 @@ function saveContent() {
                 sha: SHA // 업데이트할 파일의 SHA (파일이 이미 존재하는 경우 필요)
             };
 
+            // 깃허브에 PUT 요청(저장)
             $.ajax({
                 url: GITHUB_URL,
                 method: 'PUT',
