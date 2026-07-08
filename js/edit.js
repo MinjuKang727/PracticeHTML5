@@ -1,4 +1,28 @@
 $(document).ready(function() {
+    // 저장된 단원 목록 가져오기(from 깃허브 data/data.json)
+    if (chapterList.length === 0) {
+        $.ajax({
+            url: GITHUB_GET_URL,
+            method: 'GET',
+            dataType: 'json',
+            success: function(data) {
+                if (data && data.length > 0) {
+                    data.sort((a, b) => a.id - b.id); // ID 기준으로 정렬
+                    chapterList = data;
+                    renderChapter2Code();
+                }
+            },
+            error: function(xhr, status, error) {
+                if (xhr.status === 404) {
+                    // console.log("404 오류: json 파일이 존재하지 않습니다. 새 파일을 생성합니다.");
+                } else {
+                    // console.error("기타 오류 발생:", status, error);
+                }
+            }
+        });
+    }
+
+
     // 버튼 클릭 효과
     let bgColor;
     let bottomColor;
@@ -17,36 +41,16 @@ $(document).ready(function() {
         $(this).css("margin-top", "0");
     });
 
-
-    // 수정 유형 선택
-    $("input[name=edit_type]").on('click', function() {
-        let selectedType = $(this).val();
-
-        if (selectedType === "category") {
-            getContent();
-            $("#type_category").show();
-            $("#type_code").hide();
-            $("#type_quiz").hide();
-        } else if (selectedType === "code") {
-            $("#type_category").hide();
-            $("#type_code").show();
-            $("#type_quiz").hide();
-        } else if (selectedType === "quiz") {
-            $("#type_category").hide();
-            $("#type_code").hide();
-            $("#type_quiz").show();
-        }
-    });
-
     $(".check_input, .checkInput_info").on("click", function() {
         if ($(this).is(".checkInput_info")) {
             let checkInput;
-            if ($(this).is(".left")) {
-                checkInput = $(this).prev(".check_input");
-            } else {
-                checkInput = $(this).next(".check_input");
-            }
-
+            // if ($(this).is(".left")) {
+            //     checkInput = $(this).prev(".check_input");
+            // } else {
+            // }
+            
+            checkInput = $(this).prev(".check_input");
+            
             $(checkInput).trigger("click");
         }
     })
@@ -55,12 +59,10 @@ $(document).ready(function() {
 
 
 /** 데이터 관련 */
-
-let jsonData = {}; // JSON 데이터 저장 변수
+window.chapterList = [];
 
 // JSON 데이터로 변환
 function convert2JSON() {
-    setChapterId();
     let thisType = $("input[name=edit_type]:checked").val();
     let idMap = {};
     if (thisType === "category") {  // 목차 데이터 to JSON 변환
@@ -108,7 +110,7 @@ let SHA = '';
 
 // JSON 데이터 저장 (GitHub API 사용)
 function saveContent() {
-    if ($("input[name='multi_select']").is(":checked")) {
+    if ($("input[name='multiSelectSort']").is(":checked")) {
         alert("'단원 재정렬'을 체크 해제한 후, SAVE 버튼을 눌러주세요.");
         return;
     }
@@ -121,10 +123,10 @@ function saveContent() {
         success: function(response) {
             SHA = response.sha;
             let ACCESS_TOKEN = prompt("ACCESS_TOKEN 값을 입력하세요.", "");
-            jsonData = convert2JSON();  // JSON 데이터 저장 변수
+            let JSON_data = convert2JSON();  // JSON 데이터 저장 변수
             let payload = {
                 message: "UPDATE 'practiceHTML5' JSON 데이터",
-                content: window.btoa(unescape(encodeURIComponent( jsonData ))), // 데이터는 Base64로 인코딩
+                content: window.btoa(unescape(encodeURIComponent( JSON_data ))), // 데이터는 Base64로 인코딩
                 branch: branch, // 저장할 브랜치
                 sha: SHA // 업데이트할 파일의 SHA (파일이 이미 존재하는 경우 필요)
             };
@@ -150,42 +152,6 @@ function saveContent() {
         },
         error: function(xhr, status, error) {
             console.log("error:", error);
-        }
-    });
-}
-
-function getContent() {
-    $.ajax({
-        url: GITHUB_GET_URL,
-        method: 'GET',
-        dataType: 'json',
-        success: function(data) {
-            if (data && data.length > 0) {
-                chapterNum = data.length + 1;
-                // 단원 목록 리스트 정리 쿼리 작성하기
-                data.sort((a, b) => a.id - b.id); // ID 기준으로 정렬
-                data.forEach(item => {
-                    let chapter = 
-                    `<li id="chapterList_${item.id}">
-                        <div class="chapter_group">
-                            <input type="text" class="chapter_title" name="chapter" value="${item.name}" placeholder="제목" disabled>
-                            <input type="text" class="chapter_page" name="chapter_page" value="${item.page}" placeholder="페이지" disabled>
-                            <button class="btn blue small square" title="소제목 추가" onclick="addChapter(${item.id})">+</button>
-                            <button class="btn red small square" title="단원 제거" onclick="deleteChapter(${item.id})">-</button>
-                            <button class="btn orange small lectangle" title="수정" onclick="editChapter(${item.id})">수정</button>
-                        </div>
-                        <ul id="chapterUL_${item.id}"></ul>
-                    </li>`
-                    $(`#chapterUL_${item.parentID}`).append(chapter);
-                });
-            }
-        },
-        error: function(xhr, status, error) {
-            if (xhr.status === 404) {
-                // console.log("404 오류: json 파일이 존재하지 않습니다. 새 파일을 생성합니다.");
-            } else {
-                // console.error("기타 오류 발생:", status, error);
-            }
         }
     });
 }
