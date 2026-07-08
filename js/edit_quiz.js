@@ -1,4 +1,15 @@
 $(document).ready(function() {
+    // 수정 유형: 퀴즈 선택
+    $("input[name=edit_type][value='quiz']").on('click', function() {
+        let selectedType = $(this).val();
+
+        if (selectedType === "quiz") {
+            $("#type_category").hide();
+            $("#type_code").hide();
+            $("#type_quiz").show();
+        }
+    });
+
     // 퀴즈 유형 선택
     $("input[name=quiz_type]").on("click", function() {
         let parent = $("#type_quiz");
@@ -97,3 +108,5 @@ function resizeImage(id, width, height) {
         height: height + "px"
     });
 }
+
+/* 목차 데이터 렌더링 */

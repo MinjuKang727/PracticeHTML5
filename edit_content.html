@@ -53,9 +53,10 @@
             <div id="type_category">
                 <div id="category_header">
                 <div><span>단원 추가</span><button class="btn blue small square" id="add_chapter" title="단원 추가" onclick="addChapter()">+</button></div>
-                <div id="multi_select">
-                    <span class="font_size10 checkInput_info right" title="단원의 위치를 옮기고 싶을 때, 체크하세요.&#10;(옮길 단원을 드래그 앤 드롭하여 원하는 위치로 옮기세요.)">단원 재정렬</span>
-                    <input type="checkbox" class="check_input" name="multi_select" />
+                <div id="multiSelectSort">
+                    <input type="checkbox" class="check_input" name="multiSelectSort" />
+                    <span class="font_size10 checkInput_info right">단원 재정렬</span>
+                    <img class="info_icon cursor-pointer" src="images/icon/info.png" alt="단원 재정렬 안내">
                 </div>
                 </div>
                 <ul class="level_0" id="chapterUL_0">
@@ -67,7 +68,7 @@
                 <div class="chapter">
                     <div id="main_title">
                         <select class="chapter_title" id="chapter_title" name="chapter_title">
-                            <option value="" selected>직접 입력</option>
+                            <option value="TypeIn">직접 입력</option>
                         </select>
                         <input type="text" class="chapter_title" name="chapter_title" placeholder="단원 제목">
                     </div>

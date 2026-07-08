@@ -11,20 +11,18 @@
     vertical-align: top;
 }
 
-#multi_select {
+#multiSelectSort {
     display:flex;
     flex-direction: row;
     justify-content: flex-end;
-    align-items:flex-start;
+    align-items:center;
 }
 
-#multi_select span {
+#multiSelectSort span {
     text-align:right;
 }
 
-#multi_select > span > span {
-    display:none;
-}
+
 
 /* SortableJS */
 .sortable-selected {
@@ -62,6 +60,34 @@ input[name=select_moving] {
     display: none;
 }
 
-.sortable {
-    cursor: pointer;
+
+/* 정보 아이콘 */
+.info_icon {
+    width: 20px;
+    height: 20px;
+    margin-left: 3px;
 }
+
+/* 리스트 아이콘 */
+#type_category ul {
+    list-style: none;
+}
+
+#type_category ul img.cursor-pointer.open {
+    transform:rotate(90deg);
+}
+
+#type_category ul img.cursor-pointer.close {
+    transform:rotate(0deg);
+}
+
+/* 마우스 오버 시, 리스트 아이콘 회전 */
+/* #chapterUL_0 img.cursor-pointer.open:hover {
+    transform:rotate(0deg);
+    transition: transform 0.5s ease;
+}
+
+#chapterUL_0 img.cursor-pointer.close:hover {
+    transform:rotate(90deg);
+    transition: transform 0.5s ease;
+} */
