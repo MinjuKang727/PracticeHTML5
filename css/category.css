@@ -31,7 +31,10 @@
 }
 
 .chapter_group {
-    width: fit-content;
+    display:flex;
+    flex-direction:row;
+    justify-content: flex-start;
+    align-items:center;
     padding-right: 20px;
 }
 
@@ -57,7 +60,6 @@ input[name=select_moving] {
 
 #delete_input {
     margin-left: 5px;
-    display: none;
 }
 
 
@@ -73,11 +75,11 @@ input[name=select_moving] {
     list-style: none;
 }
 
-#type_category ul img.cursor-pointer.open {
+#type_category ul .listIcon.cursor-pointer.open {
     transform:rotate(90deg);
 }
 
-#type_category ul img.cursor-pointer.close {
+#type_category ul .listIcon.cursor-pointer.close {
     transform:rotate(0deg);
 }
 

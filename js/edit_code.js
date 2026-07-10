@@ -19,126 +19,135 @@ $(document).ready(function() {
         let selectedType = $(this).val();
 
         if (selectedType === "code") {
-            renderChapter2Code();
+            renderChapter();// 페이지 로드 시 초기 렌더링
             $("#type_category").hide();
             $("#type_code").show();
             $("#type_quiz").hide();
         }
     });
-
-    $("#chapter_title").on("change", function() {
-        let textbox = $("input[type='text'][name='chapter_title']");
-        if ($(this).val() === "TypeIn") {
-            $(textbox).show();
-        } else {
-            $(textbox).hide();
-            $("#chapter_title").css("width", "fit-content");
-        }
-    })
 });
 
-/* 목차 데이터 렌더링 */
-function renderChapter2Code(idx=0, rootID=0) {
+/* 목차 선택 변경 시 실행 함수 */
+function selectChanged(idx) {
+    $(`#chapterList${idx}`).nextAll().remove();
+    let parentID = Number($(`#chapterList${idx} select option:selected`).val());
+    renderChapter(idx + 1, parentID);
+}
 
-    do {
-        let deleteBtn = $("#type_code #delete_input");
-        if (idx == 1 && deleteBtn) {
+function getListHTML(idx) {
+    let listHTML = `<li id="chapterList${idx}">
+                            <select id="selecttitle${idx}" name="selecttitle${idx}" onchange="selectChanged(${idx})">
+                                <option value="-1">직접 입력</option>
+                            </select>
+                            <input type="text" name="textboxTitle${idx}" placeholder="단원 제목">
+                        </li>`;
+    return listHTML;
+}
 
+function getOption(val, title) {
+    let curOption = `<option value="${val}">${title}</option>`;
+    return curOption
+}
+
+
+/* 목차 데이터 렌더링(화면에 뿌리기) */
+function renderChapter(idx=0, parentID=0) {
+    let preIdx = idx - 1;
+    // 직접 입력 선택시 input박스만 보이게 하고 렌더링 종료
+    if (parentID === -1) {
+        $(`#chapterList${preIdx} input[name="textboxTitle${preIdx}"]`).show();
+        return;
+    } else {
+        $(`#chapterList${preIdx} input[name="textboxTitle${preIdx}"]`).hide();
+    }
+
+    // 앞 단원의 하위 단원만 필터링해서 정렬
+    let curTitleList  = chapterList.filter(item => item.parentID === parentID)
+                                .sort((a, b) => b.nthChild - a.nthChild);
+
+    // 하위 단원이 없는 경우 종료
+    if (curTitleList.length === 0) {
+        // 다음 하위 단원 및 현재 단원 삭제
+        if (parentID === 0) {
+            $(`#chapterList0 input[name="textboxTitle0"]`).show();
         }
-        rootID = setChapterOptions(idx++, rootID);
-    } while (rootID != -1);
 
-    // let MainChapters = chapterList.filter(item => item.parentID === rootID);
-    // if (MainChapters.length === 0) {
-    //     return;
-    // }
-    // $("input[type='text'][name='chapter_title']").hide();
-    // MainChapters.sort((a, b) => b.nthChild - a.nthChild);
-    // MainChapters.forEach(function(item) {
-    //     $("#type_code #chapter_title").prepend(`<option value="${item.id}" selected>${item.name}</option>`);
-    // });
-}
-
-function setChapterOptions(i, rootID) {  // i: 현재 subTitle은 i번째 div, rootID: i번째 div에서 선택된 옵션 값
-    let subTitles = chapterList.filter(item => item.parentID === rootID) || [];
-    // console.log(i, rootID, subTitles.length);
-
-    if (subTitles.length === 0) {
-        return -1;
+        displayDeleteBtn();
+        return;
     }
 
-    let titleDiv = $(`#type_code > div.chapter > div:eq(${i})`);
-    if ($(titleDiv).length === 0) {
-        let subtitle = `
-        <div id="subTitle_${subTitleCnt}">&nbsp;/ 
-            <select class="subTitle" name="subTitle_${subTitleCnt}" onchange="setInput(${subTitleCnt})">
-                <option value="TypeIn" selected>직접 입력</option>
-            </select>
-            <input type="text" class="subTitle" name="subTitle_${subTitleCnt}" placeholder="소제목${subTitleCnt}" />
-        </div>`.trim();
-        $("#type_code #delete_input").before(subtitle);
-        
-        titleDiv = $(`#type_code > div.chapter > div:eq(${i})`);
-    }
-    $(titleDiv).children("input[type='text']").hide();
-    subTitles.sort((a, b) => b.nthChild - a.nthChild);
-    subTitles.forEach(function(item) {
-        $(titleDiv).children(`select`).prepend(`<option value="${item.id}">${item.name}</option>`);
+    let listHTML = getListHTML(idx);
+    $(`#chapterUl`).append(listHTML);
+    curTitleList.forEach(function(item) {
+        let curOption = getOption(item.id, item.name);
+        $(`#chapterList${idx} select`).prepend(curOption)
     });
-    $(titleDiv).children("select").val(subTitles[subTitles.length - 1].id);
-    subTitleCnt++;
 
-    return parseInt($(titleDiv).children("select").val());
+    $(`#chapterList${idx} > select > option`).eq(0).prop("selected", true); // 첫번째 옵션 선택
+    parentID = Number($(`#chapterList${idx} select option:selected`).val());  // 선택 옵션의 값
+
+    renderChapter(idx + 1, parentID);
 }
 
+function displayDeleteBtn() {
+    let lastSelectTag = $(`#chapterUl li`).last().children("select");
+    let lastSelectedVal = Number(lastSelectTag.val());
+    let lastSelectedItem = chapterList.filter(item => item.id === lastSelectedVal)[0];
+    let protected = false;
+    
+    if (lastSelectedItem != undefined && lastSelectedItem.hasOwnProperty("protected")) {
+        protected = lastSelectedItem.protected;
+    }
 
-let maxSubTitleCnt = 3;
+    if (protected || ($("#chapterUl li").length === 1 && lastSelectTag.children("option").length === 1)) {
+        $("#type_code #delete_input").hide();
+    } else {
+        $("#type_code #delete_input").show();
+    }
+}
 
 // 소제목 추가
-let subTitleCnt = 1;
 function addSubTitle() {
-    let subtitle = `<div class="subTitle_group" id="subTitle_group${subTitleCnt}">
-                        &nbsp;/ <select class="subTitle" name="subTitle${subTitleCnt}" onchange="setInput(${subTitleCnt})">
-                            <option value="TypeIn" selected>직접 입력</option>
-                        </select>
-                        <input type="text" class="subTitle" name="subTitle${subTitleCnt}" placeholder="소제목${subTitleCnt}">
-                    </div>`;
-
-    if (subTitleCnt == 1) {
-        $("#delete_input").show();
-        $("#main_title").after(subtitle);
-    } else if(subTitleCnt < maxSubTitleCnt) {
-        $("#delete_input").before(subtitle);
-    } else if (subTitleCnt == maxSubTitleCnt) {
-        $("#add_input").hide();
-        $("#delete_input").before(subtitle);
+    let preChapterList = $(`#chapterUl li`).last();
+    let selectedVal = Number(preChapterList.children("select").val());
+    if (selectedVal === -1 && preChapterList.children("input").val().length === 0) {
+        alert("상위 단원의 제목을 먼저 입력해 주세요.");
+        return;
     }
 
-    subTitleCnt++;
+    let idx = $("#chapterUl").children("li").length;
+    let listHTML = getListHTML(idx);
+    $("#chapterUl").append(listHTML);
+    $("#type_code #delete_input").show();
 }
 
 // 소제목 제거
 function deleteSubTitle() {
-    subTitleCnt--;
+    let listTag = $(`#chapterUl>li`).last();
+    let selectTag = listTag.children("select");
+    let selectedId = Number(selectTag.val());
+    let optionTag = selectTag.children("option:selected");
 
-    $(`#subTitle_group${subTitleCnt}`).remove();
-
-    if (subTitleCnt == 1) {
-        $("#delete_input").hide();
-    } else if (subTitleCnt == maxSubTitleCnt) {
-        $("#add_input").show();
+    let deleteItem = chapterList.filter(item => item.id === selectedId)[0];
+    if (deleteItem != undefined && deleteItem.protected) {
+        alert("해당 단원은 삭제할 수 없습니다.");
+        return;
     }
+
+    let removeFlag = confirm(`'${optionTag.text()}'를 정말로 단원 목록에서 삭제하시겠습니까?`);
+    if (removeFlag) {
+        if (selectTag.children("option").length === 1) {
+            listTag.remove();
+        } else if (selectedId != -1) {
+            optionTag.remove();
+        }
+    }
+
+    displayDeleteBtn()
 }
 
-// 소제목 직접 입력 선택 시
-function setInput(i) {
-    if ($(`select[name=subTitle${i}]`).val() === "TypeIn") {
-        $(`input[name=subTitle${i}]`).hide();
-    } else {
-        $(`input[name=subTitle${i}]`).show();
-    }
-}
 
+/* 코드 입력 창 */
 // CodeMirror 테마 변경
 function changeTheme() {
     let selectedTheme = $("#theme_selector").val();
@@ -159,10 +168,24 @@ function runCode() {
 // 코드 변환
 function convertCode() {
     let code = myCodeMirror.getValue();
-    let convertedCode = code.replace(/</g, "&lt;")
-                            .replace(/>/g, "&gt;")
-                            .replace(/\n/g, "<br>")
-                            .replace(/ /g, "&nbsp;");
+    let convertedCode;
+    let codeInputArea = $("#type_code #example_code");
+    if (codeInputArea.hasClass("html")) {
+        // 문자 치환 순서 중요!
+        convertedCode = code.replaceAll(/</g, "&lt;")
+                            .replaceAll(/>/g, "&gt;")
+                            .replaceAll(/(?:\r\n|\r|\n)/g, '<br>')
+                            .replaceAll(/ /g, "&nbsp;")
+        codeInputArea.removeClass("html");
+    } else {
+        // 문자 치환 순서 중요!
+        convertedCode = code.replace(/<br>/g, "\n")
+                            .replace(/&lt;/g, "<")
+                            .replace(/&gt;/g, ">")
+                            .replace(/&nbsp;/g, " ");
+        codeInputArea.addClass("html");
+    }
+    
     myCodeMirror.setValue(convertedCode);
 }
 

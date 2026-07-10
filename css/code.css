@@ -6,16 +6,31 @@
     font-size: 10px;
     background-color: rgb(211, 235, 255);
     max-width: 100%;
-    width: fit-content;
     height: fit-content;
     padding: 5px 10px;
     border-radius: 5px;
-    margin-bottom: 10px;
+    margin: 3px 100px 10px 0;
+}
+
+#type_code #chapterUl {
+    list-style-type: none;
+    display:flex;
+    flex-wrap: wrap;
+    flex-direction: row;
+}
+
+#type_code #chapterUl li {
+    margin: 0 2px;
 }
 
 .example {
     margin-top: 20px;
 }
+
+.example_title {
+    width: 100%;
+}
+
 .ex_num {
     font-size: 15px;
     font-weight: normal;
@@ -33,6 +48,7 @@
 .ex_title {
     font-size: 15px;
     color: rgb(0, 133, 250);
+    width: 50%;
 }
 #example_code {
     width: 100%;
