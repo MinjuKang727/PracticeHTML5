@@ -96,40 +96,78 @@ $(document).ready(function() {
 /* 단원 데이터 데이터 렌더링 */
 let chapterList = window.chapterList || [];
 
-function renderChapter2Category() {
-    // 단원 목록 리스트 정리 쿼리 작성하기
-    chapterNum = chapterList.length + 1;
-
-    chapterList.forEach(function(item) {
-        let img_src = "/images/icon/right-arrow";
+function appendChapterHTML(item, type) {
+    let listIcon_src = "/images/icon/right-arrow";
+        let lockIcon_src = "/images/icon/lock";
         if (item.parentID === 0) {
-            img_src += "1.png";
+            listIcon_src += "1.png";
         } else if ($(`#chapterUL_${item.parentID}`).parent("li").parent("ul").attr("id") === ("chapterUL_0")) {
-            img_src += "2.png";
+            listIcon_src += "2.png";
         } else {
-            img_src += "3.png";
+            listIcon_src += "3.png";
         }
 
-        let chapter = 
+        let lockState = "unlock"
+        if (item.protected) {
+            lockIcon_src += "0.png"
+            lockState = "lock"
+        } else {
+            lockIcon_src += "2.png"
+
+        }
+
+    let chapterHTML = 
         `<li id="chapterList_${item.id}">
             <div class="chapter_group">
-                <img src="${img_src}" style="width: 13px; height: 13px; margin-right: 5px;" alt="리스트 아이콘-오른쪽 삼각형" />
+                <img src="${listIcon_src}" style="width: 13px; height: 13px; margin-right: 5px;" class="listIcon" alt="리스트 아이콘-오른쪽 삼각형" />
                 <input type="text" class="chapter_title" name="chapter" value="${item.name}" placeholder="제목" disabled>
                 <input type="text" class="chapter_page" name="chapter_page" value="${item.page}" placeholder="페이지" disabled>
+                <input type="checkbox" class="deleteProtected"  name="lock" hidden>
+                <img src="${lockIcon_src}" style="width: 15px; height: 15px; margin:0 20px 0 5px;" class="lockIcon ${lockState} cursor-pointer" title="현재 상태: 삭제 잠금 해제" onclick="changeProtected(${item.id})" alt="해당 리스트 잠금 설정 아이콘"/>
                 <button class="btn blue small square" title="소제목 추가" onclick="addChapter(${item.id})">+</button>
                 <button class="btn red small square" title="단원 제거" onclick="deleteChapter(${item.id})">-</button>
-                <button class="btn orange small lectangle" title="수정" onclick="editChapter(${item.id})">수정</button>
+                <button class="btn orange small lectangle" title="수정" onclick="editChapter(${item.id})">${type}</button>
             </div>
             <ul id="chapterUL_${item.id}"></ul>
         </li>`
-        $(`#chapterUL_${item.parentID}`).append(chapter);
 
-        let parentListIcon = $(`#chapterUL_${item.parentID}`).siblings(".chapter_group").children("img");
+    $(`#chapterUL_${(item.parentID === undefined) ? 0 : item.parentID}`).append(chapterHTML);
+    if (item.parentID != undefined) {
+        let parentListIcon = $(`#chapterUL_${item.parentID}`).siblings(".chapter_group").children(".listIcon");
         if (!parentListIcon.hasClass("cursor-pointer")) {
             parentListIcon.addClass("cursor-pointer");
             parentListIcon.addClass("open");
             parentListIcon.attr("onclick", "toggleSubChapter(this)");
         }
+    }
+}
+
+function changeProtected(id) {
+    let imgTag = $(`#chapterList_${id}>.chapter_group>.lockIcon`);
+    let inputTag = $(`#chapterList_${id}>.chapter_group>.deleteProtected`);
+    
+    if (imgTag.hasClass("unlock")) {
+        inputTag.prop("checked", true)
+        imgTag.attr("src", "/images/icon/lock0.png");
+        imgTag.attr("title", "현재 상태: 삭제 잠금");
+        imgTag.removeClass("unlock");
+        imgTag.addClass("lock");
+    } else {
+        inputTag.prop("checked", false)
+        imgTag.attr("src", "/images/icon/lock2.png");
+        imgTag.attr("title", "현재 상태: 삭제 잠금 해제");
+        imgTag.removeClass("lock");
+        imgTag.addClass("unlock");
+        
+    }
+}
+
+function renderChapter2Category() {
+    // 단원 목록 리스트 정리 쿼리 작성하기
+    chapterNum = chapterList.length + 1;
+
+    chapterList.forEach(function(item) {
+        appendChapterHTML(item, "수정");
     });
 }
 
@@ -146,44 +184,9 @@ function addChapter(i) {
             }
         }          
     }
-        
-            
-
-    let img_src = "/images/icon/right-arrow";
-        if (i === undefined) {
-            img_src += "1.png";
-        } else if ($(`#chapterUL_${i}`).parent("li").parent("ul").attr("id") === ("chapterUL_0")) {
-            img_src += "2.png";
-        } else {
-            img_src += "3.png";
-        }
-
-    let chapter = 
-    `<li class="sortable" id="chapterList_${chapterNum}">
-        <div class="chapter_group">
-            <img src="${img_src}" style="width: 13px; height: 13px; margin-right: 5px;" alt="리스트 아이콘-오른쪽 삼각형"/>
-            <input type="text" class="chapter_title" name="chapter" placeholder="제목">
-            <input type="text" class="chapter_page" name="chapter_page" placeholder="페이지">
-            <button class="btn blue small square" title="소제목 추가" onclick="addChapter(${chapterNum})">+</button>
-            <button class="btn red small square" title="단원 제거" onclick="deleteChapter(${chapterNum})">-</button>
-            <button class="btn orange small lectangle" title="수정 완료" onclick="editChapter(${chapterNum})">완료</button>
-        </div>
-        <ul id="chapterUL_${chapterNum}"></ul>
-    </li>`;
-
-    if (i === undefined) {
-        $("#chapterUL_0").append(chapter);
-    } else {
-        $(`#chapterUL_${i}`).append(chapter);
-        let parentListIcon = $(`#chapterUL_${i}`).siblings(".chapter_group").children("img");
-        if (!parentListIcon.hasClass("cursor-pointer")) {
-            parentListIcon.addClass("cursor-pointer");
-            parentListIcon.addClass("open");
-            parentListIcon.attr("onclick", "toggleSubChapter(this)");
-        }
-    }
     
-
+    let item = {"id": chapterNum, "parentID": i, "name":"", "page":"", "protected":false};
+    appendChapterHTML(item, "완료");
     chapterNum++;
 }
 

@@ -66,12 +66,9 @@
 
             <div id="type_code">
                 <div class="chapter">
-                    <div id="main_title">
-                        <select class="chapter_title" id="chapter_title" name="chapter_title">
-                            <option value="TypeIn">직접 입력</option>
-                        </select>
-                        <input type="text" class="chapter_title" name="chapter_title" placeholder="단원 제목">
-                    </div>
+                    <ul id="chapterUl">
+                        <!-- 단원 목록 리스트 추가될 영역 -->
+                    </ul>
                     <button class="btn red small square" id="delete_input" onclick="deleteSubTitle()" title="최하위 부제목 제거">-</button>
                     <button class="btn blue small square" id="add_input" onclick="addSubTitle()" title="소제목 추가">+</button>
                 </div>
@@ -87,7 +84,7 @@
                             <button class="btn green normal square" id="run" onclick="runCode()" title="코드 실행">▶</button>
                         </div>
                     </div>
-                    <textarea class="input_ex_code" id="example_code" placeholder="코드 입력"></textarea>
+                    <textarea class="input_ex_code html" id="example_code" placeholder="코드 입력"></textarea>
                     <hr>
                     <div class="practice_bottom">
                         <div class="result" id="result"></div>

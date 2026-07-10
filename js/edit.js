@@ -9,7 +9,7 @@ $(document).ready(function() {
                 if (data && data.length > 0) {
                     data.sort((a, b) => a.id - b.id); // ID 기준으로 정렬
                     chapterList = data;
-                    renderChapter2Code();
+                    renderChapter();
                 }
             },
             error: function(xhr, status, error) {
@@ -86,7 +86,8 @@ function convert2JSON() {
                 let thisNth = $(this).index();
                 let thisTitle = $(this).children("div").children(".chapter_title").val();
                 let thisPage = $(this).children("div").children(".chapter_page").val();
-                let thisJSON = {"id":thisID, "parentID": parentID, "nthChild": thisNth, "name": thisTitle, "page": thisPage};
+                let thisProtected = $(this).children("div").children(".deleteProtected").is(":checked");
+                let thisJSON = {"id":thisID, "parentID": parentID, "nthChild": thisNth, "name": thisTitle, "page": thisPage, "protected":thisProtected};
                 data.push(thisJSON);
             });
         });
