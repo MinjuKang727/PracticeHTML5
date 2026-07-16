@@ -76,7 +76,7 @@ $(document).ready(function() {
             $.ajax({
                 url: getURL(URLType.GITHUB_GET_URL, value.PATH),
                 method: 'GET',
-                dataType: 'application/json',
+                dataType: 'json',
                 success: function(data) {
                     if (data && data.length > 0) {
                         // if (data.pushed_at) {
@@ -353,8 +353,8 @@ function checkData() {
 
         let parentData;
         let parentID = findParentID();
-        console.log(typeof parentID, parentID, "is number: ", typeof parentData != "number");
-        if (typeof parentData != "number") {
+        console.log(typeof parentID, parentID, "is number: ", typeof parentData != number);
+        if (typeof parentData != number) {
             parentData = parentID;
             parentID = parentData[-1].id;
             let data = {edit_data_type: EditDataType.CATEGORY, data: parentData};
