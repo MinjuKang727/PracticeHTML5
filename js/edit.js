@@ -245,11 +245,11 @@ function saveContent() {
 // 예제 코드가 속한 단원의 아이디 찾기
 function findParentID(curChapter=$(`${EDIT_DATA_TYPE.DIV_ID} #chapterUl li`).last(), data=[]) {
     let thisID = Number(curChapter.children("select").val());
-
+    console.log(thisID);
     if (thisID === -1) {
         thisID = EditDataType.CATEGORY.DATA[-1].id + data.length + 1;
         thisName = curChapter.children('input[type="text"]').val();
-        
+
         let parentID = 0;
         let parentChapter = curChapter.prev("li");
 
@@ -267,7 +267,7 @@ function findParentID(curChapter=$(`${EDIT_DATA_TYPE.DIV_ID} #chapterUl li`).las
         let thisProtected = false;
         let ChapterJSON = getJSON([thisID, parentID, thisNth, thisTitle, thisPage, thisProtected]);
         data.push(ChapterJSON);
-        
+        console.log(data);
         return data;  // Object 타입
     }
 
