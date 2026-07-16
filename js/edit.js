@@ -78,7 +78,6 @@ $(document).ready(function() {
                 method: 'GET',
                 dataType: 'json',
                 success: function(data) {
-                    console.log(data);
                     if (data && data.length > 0) {
                         // if (data.pushed_at) {
                         //     let pushedDate = new Date(data.pushed_at);
@@ -88,6 +87,8 @@ $(document).ready(function() {
                         
                         data.sort((a, b) => a.id - b.id); // ID 기준으로 정렬
                         value.DATA = data;
+                        appendChapterDiv();
+                        renderChapterList();// 페이지 로드 시 초기 렌더링
                     }
                 },
                 error: function(xhr, status, error) {
@@ -104,9 +105,6 @@ $(document).ready(function() {
             });
         }
     });
-
-    appendChapterDiv();
-    renderChapterList();// 페이지 로드 시 초기 렌더링
 
 
     /* 버튼 클릭 효과 */
@@ -203,6 +201,8 @@ function renderChapterList(idx=0, parentID=0) {
     }
 
     // 앞 단원의 하위 단원만 필터링해서 정렬
+    
+    console.log(EditDataType.CATEGORY.DATA.length);
     let curTitleList  = EditDataType.CATEGORY.DATA.filter(item => item.parentID === parentID)
                                 .sort((a, b) => b.nthChild - a.nthChild);
 
