@@ -52,20 +52,18 @@ const URLType = Object.freeze({
     GITHUB_URL: `https://api.github.com/repos/${username}/${repo}/contents/`,
     GITHUB_GET_URL: `https://raw.githubusercontent.com/${username}/${repo}/${branch}/`,
     GITHUB_GET_SHA_URL: `https://github.com/repos/${username}/${repo}/commits/${branch}`,
-    GITHUB_POST_URL: `https://api.github.com/repos/${username}/${repo}/`
+    GITHUB_POST_URL: `https://api.github.com/repos/${username}/${repo}/`,
+    GITHUB_COMMIT_URL: `https://api.github.com/repos/${username}/${repo}/commits?per_page=1`
 
 });
 
 function getURL(URL_TYPE, SAVE_PATH=EDIT_DATA_TYPE.PATH) {
-    if (URL_TYPE === URLType.GITHUB_URL) {
+    let SAVE_PATH_URL_LIST = [URLType.GITHUB_URL, URLType.GITHUB_GET_URL, URLType.GITHUB_POST_URL];
+    if (SAVE_PATH_URL_LIST.includes(URL_TYPE)) {
         return `${URLType.GITHUB_URL}${SAVE_PATH}`;
-    } else if (URL_TYPE === URLType.GITHUB_GET_URL) {
-        return `${URLType.GITHUB_GET_URL}${SAVE_PATH}`;
-    } else if (URL_TYPE === URLType.GITHUB_GET_SHA_URL) {
-        return URLType.GITHUB_URL;
-    } else if (URL_TYPE === URLType.GITHUB_POST_URL) {
-        return `${URLType.GITHUB_POST_URL}${SAVE_PATH}`;
     }
+
+    return URL_TYPE;
 }
 
 
@@ -103,6 +101,30 @@ $(document).ready(function() {
                     }
                 }
             });
+        }
+    });
+
+    $.ajax({
+        url: getURL(URLType.GITHUB_COMMIT_URL),
+        method: "GET",
+        success: function(data, textStatus, request) {
+            // GitHub는 전체 개수를 Link 헤더의 'last' 페이지 번호로 제공
+            let linkHeader = request.getResponseHeader("Link");
+            let commitCnt = 0;
+            if (linkHeader) {
+                const match = linkHeader.match(/&page=(\d+)>; rel="last"/);
+                if (match) {
+                    commitCnt = match[1];
+                }
+            } else {
+                // 커밋이 1페이지 이하인 경우
+                commitCnt = data.length;
+            }
+            
+            $("title").text(`practiceHTML5 (ver.${commitCnt})`);
+        },
+        error: function(xhr) {
+            console.log(`커밋 개수 읽기 에러 발생: ${xhr.status} ${xhr.statusText}`);
         }
     });
 
