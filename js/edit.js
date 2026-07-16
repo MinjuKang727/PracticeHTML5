@@ -76,7 +76,7 @@ $(document).ready(function() {
             $.ajax({
                 url: getURL(URLType.GITHUB_GET_URL, value.PATH),
                 method: 'GET',
-                dataType: 'json',
+                dataType: 'application/json',
                 success: function(data) {
                     if (data && data.length > 0) {
                         // if (data.pushed_at) {
