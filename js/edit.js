@@ -249,7 +249,7 @@ function findParentID(curChapter=$(`${EDIT_DATA_TYPE.DIV_ID} #chapterUl li`).las
     if (thisID === -1) {
         thisID = EditDataType.CATEGORY.DATA[-1].id + data.length + 1;
         thisName = curChapter.children('input[type="text"]').val();
-
+        
         let parentID = 0;
         let parentChapter = curChapter.prev("li");
 
