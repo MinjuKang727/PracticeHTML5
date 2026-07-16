@@ -1,18 +1,4 @@
 $(document).ready(function() {
-    
-
-    // 수정 유형: 목차 선택
-    $("input[name=edit_type][value='category']").on('click', function() {
-        let selectedType = $(this).val();
-
-        if (selectedType === "category") {
-            renderChapter2Category();
-            $("#type_category").show();
-            $("#type_code").hide();
-            $("#type_quiz").hide();
-        }
-    });
-
     // 단원 정렬
     let sortableList = [];
 
@@ -90,15 +76,51 @@ $(document).ready(function() {
         alert(message);
     });
 
+    /* JSON 파일로 단원 불러오기 */
+    $(`input[name="upload_json"]`).change(function(event) {
+        // 파일 선택 여부 확인
+        if (!event.target.files || event.target.files.length === 0) {
+            return;
+        }
+
+        const file = event.target.files[0];
+
+        // 확장자 검사
+        if (file.type !== "application/json" && !file.name.endsWith(".json")) {
+            alert("JSON 파일만 업로드 가능합니다.");
+            return;
+        }
+
+        // FileReader로 파일 읽기
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            try {
+                const data = JSON.parse(e.target.result); // JSON 파싱
+                data.sort((a, b) => a.id - b.id); // ID 기준으로 정렬
+                EditDataType.CATEGORY.DATA = data;
+                let existLi = $(`${EDIT_DATA_TYPE.DIV_ID} #chapterUL_0 li`);
+                if (existLi.length > 0) {
+                    existLi.remove();
+                }
+                renderChapterList();
+            } catch (err) {
+                alert("JSON 파싱 오류: " + err.message);
+            }
+        };
+        reader.onerror = function() {
+            alert("파일 읽기 중 오류가 발생했습니다.");
+        };
+
+        reader.readAsText(file, "UTF-8");
+    });
+
 });
 
 
-/* 단원 데이터 데이터 렌더링 */
-let chapterList = window.chapterList || [];
-
-function appendChapterHTML(item, type) {
-    let listIcon_src = "/images/icon/right-arrow";
-        let lockIcon_src = "/images/icon/lock";
+// 새로운 단원의 HTML을 추가
+function appendChapterHTML(item, type) {  // item: 단원 정보 JSON, type: 버튼 상태(수정/완료)
+    let listIcon_src = "images/icon/right-arrow";
+        let lockIcon_src = "images/icon/lock";
         if (item.parentID === 0) {
             listIcon_src += "1.png";
         } else if ($(`#chapterUL_${item.parentID}`).parent("li").parent("ul").attr("id") === ("chapterUL_0")) {
@@ -118,15 +140,15 @@ function appendChapterHTML(item, type) {
 
     let chapterHTML = 
         `<li id="chapterList_${item.id}">
-            <div class="chapter_group">
-                <img src="${listIcon_src}" style="width: 13px; height: 13px; margin-right: 5px;" class="listIcon" alt="리스트 아이콘-오른쪽 삼각형" />
-                <input type="text" class="chapter_title" name="chapter" value="${item.name}" placeholder="제목" disabled>
-                <input type="text" class="chapter_page" name="chapter_page" value="${item.page}" placeholder="페이지" disabled>
+            <div class="chapter_group flex-row">
                 <input type="checkbox" class="deleteProtected"  name="lock" hidden>
-                <img src="${lockIcon_src}" style="width: 15px; height: 15px; margin:0 20px 0 5px;" class="lockIcon ${lockState} cursor-pointer" title="현재 상태: 삭제 잠금 해제" onclick="changeProtected(${item.id})" alt="해당 리스트 잠금 설정 아이콘"/>
+                <img src="${listIcon_src}" style="width: 13px; height: 13px; margin-right: 5px;" class="listIcon" alt="리스트 아이콘-오른쪽 삼각형" />
+                <input type="text" class="chapter_title focus-event" name="chapter" value="${item.name}" placeholder="제목" disabled>
+                <input type="text" class="chapter_page focus-event" name="chapter_page" value="${item.page}" placeholder="페이지" disabled>
+                <img src="${lockIcon_src}" class="lockIcon ${lockState} cursor-pointer" title="현재 상태: 삭제 잠금 해제" onclick="changeProtected(${item.id})" alt="해당 리스트 잠금 설정 아이콘"/>
                 <button class="btn blue small square" title="소제목 추가" onclick="addChapter(${item.id})">+</button>
                 <button class="btn red small square" title="단원 제거" onclick="deleteChapter(${item.id})">-</button>
-                <button class="btn orange small lectangle" title="수정" onclick="editChapter(${item.id})">${type}</button>
+                <button class="btn orange small lectangle" title="${type}" onclick="editChapter(${item.id})">${type}</button>
             </div>
             <ul id="chapterUL_${item.id}"></ul>
         </li>`
@@ -142,33 +164,25 @@ function appendChapterHTML(item, type) {
     }
 }
 
+// 삭제 잠금 상태 변경
 function changeProtected(id) {
     let imgTag = $(`#chapterList_${id}>.chapter_group>.lockIcon`);
     let inputTag = $(`#chapterList_${id}>.chapter_group>.deleteProtected`);
     
     if (imgTag.hasClass("unlock")) {
         inputTag.prop("checked", true)
-        imgTag.attr("src", "/images/icon/lock0.png");
+        imgTag.attr("src", "images/icon/lock0.png");
         imgTag.attr("title", "현재 상태: 삭제 잠금");
         imgTag.removeClass("unlock");
         imgTag.addClass("lock");
     } else {
         inputTag.prop("checked", false)
-        imgTag.attr("src", "/images/icon/lock2.png");
+        imgTag.attr("src", "images/icon/lock2.png");
         imgTag.attr("title", "현재 상태: 삭제 잠금 해제");
         imgTag.removeClass("lock");
         imgTag.addClass("unlock");
         
     }
-}
-
-function renderChapter2Category() {
-    // 단원 목록 리스트 정리 쿼리 작성하기
-    chapterNum = chapterList.length + 1;
-
-    chapterList.forEach(function(item) {
-        appendChapterHTML(item, "수정");
-    });
 }
 
 

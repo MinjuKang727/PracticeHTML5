@@ -1,47 +1,105 @@
-let myCodeMirror; // CodeMirror 인스턴스를 전역 변수로 선언
-
-
 $(document).ready(function() {
-    // CodeMirror 초기화
-    myCodeMirror  =  CodeMirror.fromTextArea ( document.getElementById("example_code"),  {
-        lineNumbers :  true , // 줄 번호 표시
-        matchBrackets :  true , // 괄호 자동 매칭
-        styleActiveLine :  true , // 현재 줄 강조
-        lineWrapping :  true, // 긴 줄 자동 줄바꿈
-        mode :  "htmlmixed" , // HTML 모드 설정
-        theme :  "mdn-like" , // 테마 설정 (원하는 테마로 변경 가능)
-        indentUnit :  4 , // 들여쓰기 단위 설정
-        tabSize :  4 , // 탭 크기 설정
-    } ) ;
+    /* 코드 에디터 구현 */
+    $('#code_editor textarea[name="input_code"]').on("input", function(e) {
+        let value = $(this).val();
+        let lines = value.split('\n').length;
 
-    // 수정 유형: 예제 코드 선택
-    $("input[name=edit_type][value='code']").on('click', function() {
-        let selectedType = $(this).val();
+        // 줄번호 입력
+        $('#code_editor #line_numbers').html(Array(lines).fill(0).map((_, i) => `<span>${i + 1}</span>`).join('<br>'));
 
-        if (selectedType === "code") {
-            renderChapter();// 페이지 로드 시 초기 렌더링
-            $("#type_category").hide();
-            $("#type_code").show();
-            $("#type_quiz").hide();
+        
+        let start = $(this).get(0).selectionStart;
+        let end = $(this).get(0).selectionEnd;
+
+        // 자동 들여쓰기
+        if (value.charAt(start - 1) === "\n") {
+            let prevLineStart = value.lastIndexOf('\n', start - 2) + 1;
+            let prevLine = value.substring(prevLineStart, start);
+                    
+            if (prevLine.startsWith(" ")) {
+                let indentSize = prevLine.match(/^\s*/)[0].length;
+                let indent = " ".repeat(indentSize);
+                $(this).val(value.substring(0, start) + indent + value.substring(end));
+                $(this).get(0).selectionStart = $(this).get(0).selectionEnd = start + indent.length;
+            }
         }
+    });
+
+    // 스크롤 동기화
+    $('#code_editor textarea[name="input_code"]').scroll(function() {
+        $('#code_editor #line_numbers').scrollTop($(this).scrollTop());
+    });
+
+    // Tab: 들여쓰기/ Shift+Tab: 내어쓰기 로직
+    $('#code_editor textarea[name="input_code"]').keydown(function(e) {
+        if (e.shiftKey && e.keyCode === 9) {  // keyCode: 13(Shift키), keyCode: 9(Tab키)
+            // 내어쓰기
+            e.preventDefault();  // 포커스 이동 막기
+            let start = $(this).get(0).selectionStart;
+            let end = $(this).get(0).selectionEnd;
+            let value = $(this).val();
+            let lineStart = value.lastIndexOf('\n', start - 1) + 1;
+
+            // 내어쓰기 로직
+            for (let i = 4; i > 0; i--) {
+                if (value.substring(lineStart, lineStart + i) === ' '.repeat(i)) {
+                    $(this).val(value.substring(0, lineStart) + value.substring(lineStart + i));
+                    $(this).get(0).selectionStart = $(this).get(0).selectionEnd = start - i;
+                    break;
+                }
+            }
+        } else if (e.keyCode === 9) {  // keyCode: 9(Tab키)
+            // 들여쓰기
+            e.preventDefault();  // 포커스 이동 막기
+            let value = $(this).val();
+            let start = $(this).get(0).selectionStart;
+            let end = $(this).get(0).selectionEnd;
+            let indent = " ".repeat(4);  // 들여쓰기: 공백 4칸
+            
+            $(this).val(value.substring(0, start) + indent + value.substring(end));
+            $(this).get(0).selectionStart = $(this).get(0).selectionEnd = start + indent.length;
+        }
+    });
+
+    // 코드 에디터 줄 번호 div 클릭 이벤트
+    $('#code_editor #line_numbers').on("click", function() {
+        $('#code_editor textarea[name="input_code"]').focus();
+    });
+
+
+    // focus 이벤트 처리
+    $('#code_editor textarea[name="input_code"]').on("focus", function() {
+        let div_lineNumbers = $("#code_editor #line_numbers");
+        div_lineNumbers.css("background-color", "#d1e4ff");
+        div_lineNumbers.css("color", "#0022b9");
+        let code_result = $("#code_editor #code_result");
+        code_result.css("border", "1px solid #7293ff");
+    });
+    // 포커스 해제 이벤트 처리
+    $('#code_editor textarea[name="input_code"]').on("blur", function() {
+        let div_lineNumbers = $("#code_editor #line_numbers");
+        div_lineNumbers.css("background-color", "#f1f1f1");
+        div_lineNumbers.css("color", "#848484")
+        let code_result = $("#code_editor #code_result");
+        code_result.css("border", "1px solid #868686");
     });
 });
 
 /* 목차 선택 변경 시 실행 함수 */
 function selectChanged(idx) {
-    $(`#chapterList${idx}`).nextAll().remove();
-    let parentID = Number($(`#chapterList${idx} select option:selected`).val());
-    renderChapter(idx + 1, parentID);
+    $(`${EDIT_DATA_TYPE.DIV_ID} #chapterList${idx}`).nextAll().remove();
+    let parentID = Number($(`${EDIT_DATA_TYPE.DIV_ID} #chapterList${idx} select option:selected`).val());
+    renderChapterList(idx + 1, parentID);
 }
 
-function getListHTML(idx) {
+function appendListHTML(idx) {
     let listHTML = `<li id="chapterList${idx}">
-                            <select id="selecttitle${idx}" name="selecttitle${idx}" onchange="selectChanged(${idx})">
-                                <option value="-1">직접 입력</option>
-                            </select>
-                            <input type="text" name="textboxTitle${idx}" placeholder="단원 제목">
-                        </li>`;
-    return listHTML;
+                        <select id="selecttitle${idx}" name="selecttitle${idx}" onchange="selectChanged(${idx})">
+                            <option value="-1">직접 입력</option>
+                        </select>
+                        <input type="text" name="textboxTitle${idx}" class="focus-event" placeholder="단원 제목">
+                    </li>`;
+    $(`${EDIT_DATA_TYPE.DIV_ID} #chapterUl`).append(listHTML);
 }
 
 function getOption(val, title) {
@@ -50,85 +108,45 @@ function getOption(val, title) {
 }
 
 
-/* 목차 데이터 렌더링(화면에 뿌리기) */
-function renderChapter(idx=0, parentID=0) {
-    let preIdx = idx - 1;
-    // 직접 입력 선택시 input박스만 보이게 하고 렌더링 종료
-    if (parentID === -1) {
-        $(`#chapterList${preIdx} input[name="textboxTitle${preIdx}"]`).show();
-        return;
-    } else {
-        $(`#chapterList${preIdx} input[name="textboxTitle${preIdx}"]`).hide();
-    }
-
-    // 앞 단원의 하위 단원만 필터링해서 정렬
-    let curTitleList  = chapterList.filter(item => item.parentID === parentID)
-                                .sort((a, b) => b.nthChild - a.nthChild);
-
-    // 하위 단원이 없는 경우 종료
-    if (curTitleList.length === 0) {
-        // 다음 하위 단원 및 현재 단원 삭제
-        if (parentID === 0) {
-            $(`#chapterList0 input[name="textboxTitle0"]`).show();
-        }
-
-        displayDeleteBtn();
-        return;
-    }
-
-    let listHTML = getListHTML(idx);
-    $(`#chapterUl`).append(listHTML);
-    curTitleList.forEach(function(item) {
-        let curOption = getOption(item.id, item.name);
-        $(`#chapterList${idx} select`).prepend(curOption)
-    });
-
-    $(`#chapterList${idx} > select > option`).eq(0).prop("selected", true); // 첫번째 옵션 선택
-    parentID = Number($(`#chapterList${idx} select option:selected`).val());  // 선택 옵션의 값
-
-    renderChapter(idx + 1, parentID);
-}
-
 function displayDeleteBtn() {
-    let lastSelectTag = $(`#chapterUl li`).last().children("select");
+    let lastSelectTag = $(`${EDIT_DATA_TYPE.DIV_ID} #chapterUl li`).last().children("select");
     let lastSelectedVal = Number(lastSelectTag.val());
-    let lastSelectedItem = chapterList.filter(item => item.id === lastSelectedVal)[0];
+    let lastSelectedItem = EditDataType.CATEGORY.DATA.filter(item => item.id === lastSelectedVal)[0];
     let protected = false;
     
     if (lastSelectedItem != undefined && lastSelectedItem.hasOwnProperty("protected")) {
         protected = lastSelectedItem.protected;
     }
 
-    if (protected || ($("#chapterUl li").length === 1 && lastSelectTag.children("option").length === 1)) {
-        $("#type_code #delete_input").hide();
+    if (protected || ($(`${EDIT_DATA_TYPE.DIV_ID} #chapterUl li`).length === 1 && lastSelectTag.children("option").length === 1)) {
+        $(`${EDIT_DATA_TYPE.DIV_ID} #delete_input`).hide();
     } else {
-        $("#type_code #delete_input").show();
+        $(`${EDIT_DATA_TYPE.DIV_ID} #delete_input`).show();
     }
 }
 
 // 소제목 추가
 function addSubTitle() {
-    let preChapterList = $(`#chapterUl li`).last();
+    let preChapterList = $(`${EDIT_DATA_TYPE.DIV_ID} #chapterUl li`).last();
     let selectedVal = Number(preChapterList.children("select").val());
     if (selectedVal === -1 && preChapterList.children("input").val().length === 0) {
         alert("상위 단원의 제목을 먼저 입력해 주세요.");
         return;
     }
 
-    let idx = $("#chapterUl").children("li").length;
-    let listHTML = getListHTML(idx);
-    $("#chapterUl").append(listHTML);
-    $("#type_code #delete_input").show();
+    let idx = $(`${EDIT_DATA_TYPE.DIV_ID} #chapterUl`).children("li").length;
+    appendListHTML(idx);
+    $(`${EDIT_DATA_TYPE.DIV_ID} #delete_input`).show();
 }
 
 // 소제목 제거
 function deleteSubTitle() {
-    let listTag = $(`#chapterUl>li`).last();
+    let listTag = $(`${EDIT_DATA_TYPE.DIV_ID} #chapterUl li`).last();
     let selectTag = listTag.children("select");
     let selectedId = Number(selectTag.val());
     let optionTag = selectTag.children("option:selected");
 
-    let deleteItem = chapterList.filter(item => item.id === selectedId)[0];
+    let deleteItem = EditDataType.CATEGORY.DATA.filter(item => item.id === selectedId)[0];
     if (deleteItem != undefined && deleteItem.protected) {
         alert("해당 단원은 삭제할 수 없습니다.");
         return;
@@ -146,46 +164,43 @@ function deleteSubTitle() {
     displayDeleteBtn()
 }
 
-
-/* 코드 입력 창 */
-// CodeMirror 테마 변경
-function changeTheme() {
-    let selectedTheme = $("#theme_selector").val();
-    myCodeMirror.setOption("theme", selectedTheme);
-};
+// // 코드 변환
+// function convertCode() {
+//     let code = $('#code_editor textarea[name="input_code"]');
+//     let convertedCode;
+//     let codeInputArea = $('#code_editor textarea[name="input_code"]');
+//     if (codeInputArea.hasClass("html")) {
+//         // 문자 치환 순서 중요!
+//         convertedCode = code.val().replaceAll(/</g, "&lt;")
+//                             .replaceAll(/>/g, "&gt;")
+//                             .replaceAll(/(?:\r\n|\r|\n)/g, '<br>')
+//                             .replaceAll(/ /g, "&nbsp;")
+//         codeInputArea.removeClass("html");
+//     } else {
+//         // 문자 치환 순서 중요!
+//         convertedCode = code.val().replace(/<br>/g, "\n")
+//                             .replace(/&lt;/g, "<")
+//                             .replace(/&gt;/g, ">")
+//                             .replace(/&nbsp;/g, " ");
+//         codeInputArea.addClass("html");
+//     }
+// }
 
 // 코드 실행
 function runCode() {
-    let code = myCodeMirror.getValue();
-    $("#result").html(code);
-    if (code.trim() === "") {
-        $("#result").css("border", "none");
-    } else {
-        $("#result").css("border", "1px solid rgb(1, 11, 22)");
-    }
+    let code = $('#code_editor textarea[name="input_code"]').val();
+    // 사용자의 코드를 Blob으로 변환
+    const blob = new Blob([code], { type: 'text/html' });
+    const iframeUrl = URL.createObjectURL(blob);
+
+    // iframe의 src로 설정
+    $("#code_result").attr("src", iframeUrl);
+    $('#code_editor textarea[name="input_code"]').focus();
 }
 
-// 코드 변환
-function convertCode() {
-    let code = myCodeMirror.getValue();
-    let convertedCode;
-    let codeInputArea = $("#type_code #example_code");
-    if (codeInputArea.hasClass("html")) {
-        // 문자 치환 순서 중요!
-        convertedCode = code.replaceAll(/</g, "&lt;")
-                            .replaceAll(/>/g, "&gt;")
-                            .replaceAll(/(?:\r\n|\r|\n)/g, '<br>')
-                            .replaceAll(/ /g, "&nbsp;")
-        codeInputArea.removeClass("html");
-    } else {
-        // 문자 치환 순서 중요!
-        convertedCode = code.replace(/<br>/g, "\n")
-                            .replace(/&lt;/g, "<")
-                            .replace(/&gt;/g, ">")
-                            .replace(/&nbsp;/g, " ");
-        codeInputArea.addClass("html");
-    }
-    
-    myCodeMirror.setValue(convertedCode);
+function resetCode() {
+    $('#code_editor textarea[name="input_code"]').val("");
+    $("#code_result").attr("src", "");
+    $('#code_editor #line_numbers').html("<span>1</span>")
+    $('#code_editor textarea[name="input_code"]').focus();
 }
-

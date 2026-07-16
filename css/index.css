@@ -3,8 +3,6 @@
     font-weight: bold;
 }
 .content {
-    display: flex;
-    flex-direction: column;
     width: 95%;
     height: 100%;
     gap: 20px;
@@ -26,7 +24,7 @@
     margin-bottom: 30px;
 }
 
-.input_desc, #question, #quiz_solution {
+textarea[name="ex_concept"], textarea[name="q_text"], textarea[name="sol_text"] {
     font-size: 15px;
     width: 100%;
     height: 20vh;
@@ -34,19 +32,26 @@
     overflow: auto;
 }
 
-.checkInput_info, input[type=checkbox], input[type=radio]:hover {
-    cursor: pointer;
-}
-
-.cursor-pointer:hover {
+.cursor-pointer:hover, .checkInput_info:hover, input[type="checkbox"], input[type="radio"]:hover, input[type="file"]:hover {
     cursor: pointer;
 }
 
 /* 태그 */
+/* body {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 20px;
+} */
+
 hr {
     margin: 10px 0;
     border: none;
     border-top: 1px solid rgb(32, 132, 255);
+}
+
+textarea:focus {
+    outline: none;       /* 기본 포커스 외곽선 제거 */
 }
  
 
@@ -97,8 +102,8 @@ hr {
 }
 
 .green {
-    background-color: rgb(3, 167, 3);
-    border-bottom-color: rgb(0, 133, 0);
+    background-color: lightgreen;
+    border-bottom-color: green;
     color: white;
 }
 
@@ -114,8 +119,113 @@ hr {
     color: white;
 }
 
+.lightblue {
+    background-color: rgb(215, 233, 255);
+    border-bottom-color: rgb(101, 146, 208);
+}
+
 .orange {
     background-color: rgb(255, 166, 0);
     border-bottom-color: rgb(173, 95, 0);
     color: white;
 }
+
+.yellow {
+    background-color: rgb(255, 219, 103);
+    border-bottom-color: rgb(174, 142, 0);
+}
+
+.gray {
+    background-color: rgb(215, 215, 215);
+    border-bottom-color: rgb(78, 78, 78);
+}
+
+/* focus시 테두리 및 배경색 변경 */
+.focus-event {
+    outline:none;
+}
+
+.focus-event:hover {
+    cursor:pointer;
+}
+
+.focus-event:focus {
+    outline: none;
+    border: 1px solid #446dff;
+    background-color: #f4f9fd;
+    color: black;
+}
+
+/* 코드 에디터*/
+#code_editor {
+    align-items: stretch;
+	align-content: stretch;
+    justify-content: flex-start;
+    gap: 5px;
+    width:100%;
+    height: 300px;
+    margin-bottom:20px;
+}
+
+#line_numbers {
+    flex: 0 0 15px;
+    max-height:280px;
+    padding: 10px;
+    text-align: right;
+    font-family: monospace;
+    font-size: 15px;
+    line-height: 20px;
+    user-select: none; /* 줄 번호 선택 방지 */
+    overflow: auto;
+    scrollbar-width: none;
+    border:none;
+    background-color: #f1f1f1;
+    color: #848484;
+}
+
+textarea[name="input_code"] {
+    flex: 1 0 200px;
+    height: 100%;
+    font-size: 15px;
+    padding: 10px;
+    /* border: 1px solid rgb(159, 185, 214); */
+    /* 선 넣기 핵심 CSS */
+    line-height: 20px; /* 줄 높이 */
+    background-image: linear-gradient(#dbe5f1 0.5px, transparent 0.5px);
+    background-size: 100% 20px; /* line-height와 동일하게 설정 */
+    background-position: 0 10px; /* 텍스트 높이에 맞게 조절 */
+    background-attachment: local; /* 스크롤 시 배경도 같이 움직이도록 설정 */
+    resize: none;
+    box-sizing: border-box;
+    overflow: auto;
+    scrollbar-width: auto;
+    scrollbar-color: rgb(32, 132, 255) rgb(236, 247, 255);
+    tab-size: 4;
+}
+
+textarea[name="input_code"]:focus {
+    border: 1.6px solid #658eef; 
+    background-image: linear-gradient(#3e92f9 0.5px, transparent 0.5px);
+}
+
+#code_result {
+    border: 1px solid #868686;
+    margin: 0 10px 0 10px;
+    flex: 1 0 200px;
+    max-height:276px;
+    height: 100%;
+    padding: 10px;
+}
+
+/* display: flex */
+.flex-row {
+    display:flex;
+    flex-flow: row wrap;
+}
+
+.flex-column {
+    display:flex;
+    flex-direction:column;
+    flex-wrap: wrap;
+}
+

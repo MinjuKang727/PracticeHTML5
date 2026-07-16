@@ -5,18 +5,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Practice HTML5</title>
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/codemirror.min.css">
-    <!-- 테마 추가 (선택) -->
+    <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/codemirror.min.css">
+    // 테마 추가 (선택)
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/theme/mdn-like.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/theme/duotone-light.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/theme/lucario.min.css">
-    <!-- 2. CodeMirror JS Core -->
+    // 2. CodeMirror JS Core
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/codemirror.min.js"></script>
-    <!-- 3. 구문 강조 모드 (HTML/JS/CSS) -->
+    // 3. 구문 강조 모드 (HTML/JS/CSS)
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/mode/xml/xml.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/mode/javascript/javascript.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/mode/css/css.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/mode/htmlmixed/htmlmixed.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/mode/htmlmixed/htmlmixed.min.js"></script> -->
     <!-- 리스트 드래그 앤 드롭 -->
     <link href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css" rel="stylesheet" type="text/css" />
     <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
@@ -42,121 +42,89 @@
     <div>
         <span class="title">Practice HTML5</span>
     </div>
-    <div id="edit_type"><span>수정 유형: </span>
-            <input type="radio" class="check_input" name="edit_type" value="category"/><span class="checkInput_info left">목차</span>
-            <input type="radio" class="check_input" name="edit_type" value="code" checked/><span class="checkInput_info left">예제 코드</span>
-            <input type="radio" class="check_input" name="edit_type" value="quiz"/><span class="checkInput_info left">퀴즈</span>
+    <div id="edit_data_type"><span>수정 유형: </span>
+            <input type="radio" class="check_input" name="edit_data_type" value="CATEGORY"/><span class="checkInput_info left">목차</span>
+            <input type="radio" class="check_input" name="edit_data_type" value="CODE" checked/><span class="checkInput_info left">예제 코드</span>
+            <input type="radio" class="check_input" name="edit_data_type" value="QUIZ"/><span class="checkInput_info left">퀴즈</span>
     </div>
     
-    <div class="content">
+    <div class="content flex-column">
         <div class="desc">
-            <div id="type_category">
-                <div id="category_header">
-                <div><span>단원 추가</span><button class="btn blue small square" id="add_chapter" title="단원 추가" onclick="addChapter()">+</button></div>
-                <div id="multiSelectSort">
-                    <input type="checkbox" class="check_input" name="multiSelectSort" />
-                    <span class="font_size10 checkInput_info right">단원 재정렬</span>
-                    <img class="info_icon cursor-pointer" src="images/icon/info.png" alt="단원 재정렬 안내">
+            <div id="type_category"> <!-- 목차 편집 영역 -->
+                <div id="category_header" class="flex-row">
+                    <div>
+                        <span>단원 추가</span>
+                        <button class="btn blue small square" id="add_chapter" title="단원 추가" onclick="addChapter()">+</button>
+                        <input type="file" name="upload_json" accept=".json" title="JSON 파일로 단원 불러오기">
+                    </div>
+                    <div id="multiSelectSort" class="flex-row">
+                        <input type="checkbox" class="check_input" name="multiSelectSort" />
+                        <span class="font_size10 checkInput_info right">단원 재정렬</span>
+                        <img class="info_icon cursor-pointer" src="images/icon/info.png" alt="단원 재정렬 안내">
+                    </div>
                 </div>
-                </div>
-                <ul class="level_0" id="chapterUL_0">
+                <ul id="chapterUL_0">
                     <!-- 단원 목록이 추가될 영역 -->
                 </ul>
             </div>
 
-            <div id="type_code">
-                <div class="chapter">
-                    <ul id="chapterUl">
-                        <!-- 단원 목록 리스트 추가될 영역 -->
-                    </ul>
-                    <button class="btn red small square" id="delete_input" onclick="deleteSubTitle()" title="최하위 부제목 제거">-</button>
-                    <button class="btn blue small square" id="add_input" onclick="addSubTitle()" title="소제목 추가">+</button>
-                </div>
-                <div class="concept"><textarea class="input_desc" placeholder="개념 설명"></textarea></div>
+            <div id="type_code"> <!-- 예제 코드 편집 영역 -->
+                <div class="chapter flex-row"><!-- 목차 태그 입력할 부분 --></div>
+                <textarea name="ex_concept" class="focus-event" placeholder="개념 설명"></textarea>
                 <div class="example">
-                    <div class="example_header">
-                        <div class="example_title">
-                            <input type="text" class="ex_num input_ex_num" placeholder="예제 2-1">
-                            <input type="text" class="ex_title input_ex_title" placeholder="줄바꿈을 수행하는 br 요소">
+                    <div class="ex_header flex-row">
+                        <div class="example_title flex-row">
+                            <input type="text" class="focus-event" name="ex_num" placeholder="예제 _-_">
+                            <input type="text" class="focus-event" name="ex_title" placeholder="예제 제목">
                         </div>
-                        <div class="btn_group">
-                            <button class="btn green normal square" id="convert" onclick="convertCode()" title="코드 변환">↻</button>
-                            <button class="btn green normal square" id="run" onclick="runCode()" title="코드 실행">▶</button>
+                        <div class="btn_group flex-row">
+                            <!-- <button class="btn green normal square" id="convertCode" onclick="convertCode()" title="코드 변환">↹</button> -->
+                            <button class="btn lightblue normal square" id="resetCode" onclick="resetCode()" title="코드 초기화"><img src="/images/icon/eraser2.png" alt="지우개"></button>
+                            <button class="btn lightblue normal square" id="runCode" onclick="runCode()" title="코드 실행"><img src="/images/icon/right-arrow1.png" alt="오른쪽 삼각형"></button>
                         </div>
                     </div>
-                    <textarea class="input_ex_code html" id="example_code" placeholder="코드 입력"></textarea>
-                    <hr>
-                    <div class="practice_bottom">
-                        <div class="result" id="result"></div>
+                    <div class="flex-row" id="code_editor">
+                        <div id="line_numbers" class="focus-event"><span>1</span></div>
+                        <textarea class="html" name="input_code" placeholder="여기에 코드를 입력하세요"></textarea>
+                        <iframe id="code_result" sandbox="allow-scripts"></iframe>
                     </div>
                 </div>
             </div>
 
-            <div id="type_quiz">
+            <div id="type_quiz"> <!-- 퀴즈 편집 영역 -->
+                <div class="chapter flex-row"><!-- 목차 태그 입력할 부분 --></div>
                 <div class="quiz_type">
-                    <input type="radio" class="check_input" name="quiz_type" value="objective" checked/><span  class="checkInput_info left"> 객관식</span>
-                    <input type="radio" class="check_input" name="quiz_type" value="subjective"/><span class="checkInput_info left"> 주관식</span>
+                    <input type="radio" class="check_input" name="quiz_type" value="Obj" checked/><span  class="checkInput_info left"> 객관식</span>
+                    <input type="radio" class="check_input" name="quiz_type" value="Subj"/><span class="checkInput_info left"> 주관식</span>
                 </div>
-                <div class="image">
-                    <div class="img_input">
-                        <span>이미지 삽입: </span>
-                        <input type="file" name="quiz_img_dir" accept="image/*"/>
-                        <button class="btn red small square" title="이미지 제거" onclick="clearFileInput('quiz_img_dir')">X</button>
-                        <div class="img_length">
-                                <span>이미지 크기: </span>
-                                <input type="text" class="img_length_input width" name="ans_img_w" placeholder="너비">
-                                <span>x</span>
-                                <input type="text" class="img_length_input height" name="ans_img_h" placeholder="높이">
-                                <input type="text" id="img_ratio" name="img_ratio" hidden/>
-                                <button class="btn green small square" id="resize_quiz_image" title="이미지 크기 변경" onclick="resizeImage('#resize_quiz_image', $(this).siblings('.width').val(), $(this).siblings('.height').val())">✔</button>
-                            </div>
-                    </div>
-                    <img src="" alt="퀴즈 사진">
+                <div id="question">
+                    <div class="image flex-column"><!-- 이미지 파일 추가 태그 입력할 부분 --></div>
+                    <textarea class="focus-event" name="q_text" placeholder="퀴즈 내용을 입력해주세요."></textarea>
                 </div>
                 
-                <textarea id="question" placeholder="퀴즈 입력"></textarea>
 
-                <div id="options">
-                    <div class="op_group"><span>1. </span><input type="text" class="quiz_op" placeholder="선택지 1"></div>
-                    <div class="op_group"><span>2. </span><input type="text" class="quiz_op" placeholder="선택지 2"></div>
-                    <div class="op_group"><span>3. </span><input type="text" class="quiz_op" placeholder="선택지 3"></div>
-                    <div class="op_group"><span>4. </span><input type="text" class="quiz_op" placeholder="선택지 4"></div>
-
-                    <div class="last_option op_group">
+                <div id="obj_options">
+                    <!-- 선택지 1 ~ 4번 들어갈 부분 -->
+                    <div class="last_option op_group flex-row">
                         <input type="checkbox" class="check_input" name="add_option" value="add_option"/><span class="checkInput_info left"> 선택지 추가</span> 
-                        <div class="last_option_input"><span>5. </span><input type="text" class="quiz_op" placeholder="선택지 5"></div>
+                        <!-- 선택지 5번 들어갈 부분 -->
                     </div>
                 </div>
-
-                <div id="solution">
+                <hr>
+                <div class="flex-column" id="solution">
+                    <div class="flex-row">
                     <span>정답: </span>
-                    <div id="answer_options">
-                        <input type="radio" class="check_input" name="answer" value="1"/><span class="checkInput_info left">①</span>
-                        <input type="radio" class="check_input" name="answer" value="2"/><span class="checkInput_info left">②</span>
-                        <input type="radio" class="check_input" name="answer" value="3"/><span class="checkInput_info left">③</span>
-                        <input type="radio" class="check_input" name="answer" value="4"/><span class="checkInput_info left">④</span>
-                        <input type="radio" class="check_input" name="answer" value="5"/><span class="checkInput_info left">⑤</span>
+                    <div id="obj_answer" class="flex-row"><!-- 정답 선택지 1 ~ 5번 들어갈 부분 --></div>
                     </div>
-                    <div class="image">
-                        <div class="img_input">
-                            <span>이미지 삽입: </span>
-                            <input type="file" name="answer_img_dir" accept="image/*"/>
-                            <button class="btn red small square" title="이미지 제거" onclick="clearFileInput('answer_img_dir')">X</button>
-                            <div class="img_length">
-                                <span>이미지 크기: </span>
-                                <input type="text" class="img_length_input width" name="ans_img_w" placeholder="너비">
-                                <span>x</span>
-                                <input type="text" class="img_length_input height" name="ans_img_h" placeholder="높이">
-                                <input type="text" id="img_ratio" name="img_ratio" hidden/>
-                                <button class="btn green small square" id="resize_answer_image" title="이미지 크기 변경" onclick="resizeImage('#resize_answer_image',$(this).siblings('.width').val(), $(this).siblings('.height').val())">✔</button>
-                            </div>
-                        </div>
-                        <img src="" alt="퀴즈 풀이 사진">
-                    </div>
-                    <textarea id="quiz_solution" placeholder="풀이 입력"></textarea>
+                    <textarea id="subj_answer" class="focus-event" name="subj_answer" placeholder="정답을 입력해 주세요."></textarea>
+                    <div class="image flex-column"><!-- 이미지 파일 추가 태그 입력할 부분 --></div>
+                    <textarea name="sol_text" class="focus-event" placeholder="풀이를 입력해 주세요."></textarea>
                 </div>
             </div>
-            <button class="btn orange long lectangle" id="save" title="저장" onclick="saveContent()" title="저장">SAVE</button>
+            <div class="flex-row">
+                <button class="btn orange long lectangle" id="saveContent" onclick="saveContent()" title="입력한 내용을 저장합니다.">저장</button>
+                <button class="btn red long lectangle" id="resetContent" onclick="resetContent()" title="입력 내용을 모두 지우고 처음 상태로 되돌립니다.">초기화</button>
+            </div>
         </div>
     </div>
 </body>
