@@ -50,12 +50,12 @@ let SHA = '';
 
 const URLType = Object.freeze({
     // GITHUB_URL: `https://api.github.com/repos/${username}/${repo}/contents/`,
-    GITHUB_URL: "./",
+    GITHUB_URL: "https://minjukang727.github.io/PracticeHTML5/",
     // GITHUB_GET_URL: `https://raw.githubusercontent.com/${username}/${repo}/${branch}/`,
-    GITHUB_GET_URL: "./",
+    GITHUB_GET_URL: "https://minjukang727.github.io/PracticeHTML5/",
     GITHUB_GET_SHA_URL: `https://github.com/repos/${username}/${repo}/commits/${branch}`,
     // GITHUB_POST_URL: `https://api.github.com/repos/${username}/${repo}/`,
-    GITHUB_POST_URL: "./",
+    GITHUB_POST_URL: "https://minjukang727.github.io/PracticeHTML5/",
     GITHUB_COMMIT_URL: `https://api.github.com/repos/${username}/${repo}/commits?per_page=1`
 });
 
