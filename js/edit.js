@@ -271,6 +271,7 @@ function findParentID(curChapter=$(`${EDIT_DATA_TYPE.DIV_ID} #chapterUl li`).las
     let thisID = Number(curChapter.children("select").val());
     console.log(thisID);
     if (thisID === -1) {
+        console.log(thisID, "is -1");
         thisID = EditDataType.CATEGORY.DATA[-1].id + data.length + 1;
         thisName = curChapter.children('input[type="text"]').val();
 
@@ -352,7 +353,7 @@ function checkData() {
 
         let parentData;
         let parentID = findParentID();
-        console.log(typeof parentData, parentData);
+        console.log(typeof parentID, parentID, "is number: ", typeof parentData != "number");
         if (typeof parentData != "number") {
             parentData = parentID;
             parentID = parentData[-1].id;
