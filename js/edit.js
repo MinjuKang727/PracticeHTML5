@@ -94,8 +94,8 @@ $(document).ready(function() {
                 error: function(xhr, status, error) {
                     if (xhr.status === 404) {
                         console.log("404 오류: json 파일이 존재하지 않습니다. 새 파일을 생성합니다.");
-                        let json_data = JSON.stringify(value.DATA);
-                        postJSON(json_data, EditDataType[key]);
+                        // let json_data = JSON.stringify(value.DATA);
+                        // postJSON(json_data, EditDataType[key]);
                     } else if(xhr.status === 403) {
                         console.log("403 오류: 요청한 웹 리소스에 접근 권한이 없습니다.");
                     } else {
@@ -353,8 +353,12 @@ function checkData() {
 
         let parentData;
         let parentID = findParentID();
-        console.log(typeof parentID, parentID, "is number: ", typeof parentData != number);
-        if (typeof parentData != number) {
+        if (isNaN(parentID)) {
+            console.log("데이터 저장 위치 찾기 실패");
+            return;
+        }
+        console.log(typeof parentID, parentID, "is number: ", typeof parentData != "number");
+        if (typeof parentData != "number") {
             parentData = parentID;
             parentID = parentData[-1].id;
             let data = {edit_data_type: EditDataType.CATEGORY, data: parentData};
