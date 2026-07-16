@@ -49,11 +49,11 @@ let branch = 'EDIT_CATEGORY';
 let SHA = '';
 
 const URLType = Object.freeze({
-    GITHUB_URL: `https://api.github.com/repos/${username}/${repo}/contents/`,
+    GITHUB_URL: `https://raw.githubusercontent.com/${username}/${repo}/contents/`,
     GITHUB_GET_URL: `https://raw.githubusercontent.com/${username}/${repo}/${branch}/`,
     GITHUB_GET_SHA_URL: `https://github.com/repos/${username}/${repo}/commits/${branch}`,
-    GITHUB_POST_URL: `https://api.github.com/repos/${username}/${repo}/`,
-    GITHUB_COMMIT_URL: `https://api.github.com/repos/${username}/${repo}/commits?per_page=1`
+    GITHUB_POST_URL: `https://raw.githubusercontent.com/${username}/${repo}/`,
+    GITHUB_COMMIT_URL: `https://raw.githubusercontent.com/${username}/${repo}/commits?per_page=1`
 
 });
 
