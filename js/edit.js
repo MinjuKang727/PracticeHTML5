@@ -357,8 +357,8 @@ function checkData() {
             console.log("데이터 저장 위치 찾기 실패");
             return;
         }
-        console.log(typeof parentID, parentID, "is number: ", typeof parentData != "number");
-        if (typeof parentData != "number") {
+        console.log(typeof parentID, parentID, "is number: ", typeof parentID != "number");
+        if (typeof parentID != "number") {
             parentData = parentID;
             parentID = parentData[-1].id;
             let data = {edit_data_type: EditDataType.CATEGORY, data: parentData};
