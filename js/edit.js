@@ -94,8 +94,8 @@ $(document).ready(function() {
                 error: function(xhr, status, error) {
                     if (xhr.status === 404) {
                         console.log("404 오류: json 파일이 존재하지 않습니다. 새 파일을 생성합니다.");
-                        // let json_data = JSON.stringify(value.DATA);
-                        // postJSON(json_data, EditDataType[key]);
+                        let json_data = JSON.stringify(value.DATA);
+                        postJSON(json_data, EditDataType[key]);
                     } else if(xhr.status === 403) {
                         console.log("403 오류: 요청한 웹 리소스에 접근 권한이 없습니다.");
                     } else {
@@ -201,8 +201,6 @@ function renderChapterList(idx=0, parentID=0) {
     }
 
     // 앞 단원의 하위 단원만 필터링해서 정렬
-    
-    console.log(EditDataType.CATEGORY.DATA.length);
     let curTitleList  = EditDataType.CATEGORY.DATA.filter(item => item.parentID === parentID)
                                 .sort((a, b) => b.nthChild - a.nthChild);
 
@@ -259,7 +257,7 @@ function findParentID(curChapter=$(`${EDIT_DATA_TYPE.DIV_ID} #chapterUl li`).las
             parentID = parentChapter.children("select").val();
 
             if (parentID === -1) {
-                findParentID(parentChapter);
+                data = findParentID(parentChapter);
                 parentID = data[-1].id;
             }
         }
@@ -330,6 +328,7 @@ function checkData() {
 
         let parentData;
         let parentID = findParentID();
+        console.log(typeof parentData, parentData);
         if (typeof parentData != "number") {
             parentData = parentID;
             parentID = parentData[-1].id;
