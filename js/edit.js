@@ -366,7 +366,7 @@ function checkData() {
         }
 
         let concept = $('#type_code textarea[name="ex_concept"]');
-        let thisConcept = concept.val().trim();
+        let thisConcept = concept.val();
         if (thisConcept.length === 0) {
             continueFlag = confirm("개념 설명란이 비어있습니다.\n이대로 계속 진행하시겠습니까?");
             if (!continueFlag) {
@@ -376,7 +376,7 @@ function checkData() {
         }
 
         let ex_num = $(`input[name="ex_num"]`);
-        let thisNum = ex_num.val().trim();
+        let thisNum = ex_num.val();
         if (thisNum.length === 0) {
             alert("예제 번호를 입력해 주십시오.");
             ex_num.focus();
@@ -384,7 +384,7 @@ function checkData() {
         }
 
         let ex_title = $(`input[name="ex_title"]`);
-        let thisTitle = ex_title.val().trim();
+        let thisTitle = ex_title.val();
         if (thisTitle.length === 0) {
             alert("예제 제목을 입력해 주십시오.");
             ex_title.focus();
@@ -392,7 +392,7 @@ function checkData() {
         }
 
         let ex_code = $('#code_editor #input_code');
-        let thisCode = ex_code.val().trim();
+        let thisCode = ex_code.val();
         if (thisCode.length === 0) {
             alert("예제 코드를 입력해 주십시오.");
             ex_code.focus();
@@ -400,6 +400,8 @@ function checkData() {
         }
         let thisCodeJSON = getJSON([thisID, parentID, thisConcept, thisNum, thisTitle, thisCode]);
         let data = {edit_data_type: EditDataType.CODE, data: thisCodeJSON};
+        console.log(data);
+        return;
         pushData.push(data);
 
     } else if (EDIT_DATA_TYPE === EditDataType.QUIZ) {  // <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<-------------------------------- 수정 유형: 퀴즈
