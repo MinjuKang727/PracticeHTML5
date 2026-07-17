@@ -269,7 +269,7 @@ function saveContent() {
 // 예제 코드가 속한 단원의 아이디 찾기
 function findParentID(curChapter=$(`${EDIT_DATA_TYPE.DIV_ID} #chapterUl li`).last(), data=[]) {
     let thisID = Number(curChapter.children("select").val());
-    console.log(thisID);
+    
     if (thisID === -1) {
         console.log(thisID, "is -1");
         thisID = EditDataType.CATEGORY.DATA[-1].id + data.length + 1;
@@ -357,7 +357,7 @@ function checkData() {
             console.log("데이터 저장 위치 찾기 실패");
             return;
         }
-        console.log(typeof parentID, parentID, "is number: ", typeof parentID != "number");
+        // console.log(typeof parentID, parentID, "is number: ", typeof parentID != "number");
         if (typeof parentID != "number") {
             parentData = parentID;
             parentID = parentData[-1].id;
@@ -391,7 +391,7 @@ function checkData() {
             return !continueFlag;
         }
 
-        let ex_code = $('#code_editor #input_code');
+        let ex_code = $('#code_editor textarea[name="input_code"]');
         let thisCode = ex_code.val();
         if (thisCode.length === 0) {
             alert("예제 코드를 입력해 주십시오.");
@@ -400,8 +400,6 @@ function checkData() {
         }
         let thisCodeJSON = getJSON([thisID, parentID, thisConcept, thisNum, thisTitle, thisCode]);
         let data = {edit_data_type: EditDataType.CODE, data: thisCodeJSON};
-        console.log(data);
-        return;
         pushData.push(data);
 
     } else if (EDIT_DATA_TYPE === EditDataType.QUIZ) {  // <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<-------------------------------- 수정 유형: 퀴즈
