@@ -416,7 +416,7 @@ function checkData() {
 
         let quiz_type = $(`${EditDataType.QUIZ.DIV_ID} input[name="quiz_type"]`).val();
         let q_img_src = $(`${EditDataType.QUIZ.DIV_ID} #question .image #q_img`).attr("src");
-        let q_text = $(`${EditDataType.QUIZ.DIV_ID} #question textarea[name="q_text"]`).val().trim();
+        let q_text = $(`${EditDataType.QUIZ.DIV_ID} #question textarea[name="q_text"]`).val();
 
         if (q_img_src.length === 0 && q_text.length === 0) {
             alert("퀴즈 문제를 입력해 주세요.");
@@ -425,7 +425,7 @@ function checkData() {
         }
         
         let solution_img = $(`${EditDataType.QUIZ.DIV_ID} #solution .image #sol_img`).attr("src");
-        let solution_text = $(`${EditDataType.QUIZ.DIV_ID} #solution textarea[name="sol_text"]`).val().trim();
+        let solution_text = $(`${EditDataType.QUIZ.DIV_ID} #solution textarea[name="sol_text"]`).val();
 
         if (quiz_type === QuizType.OBJ) {  // <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<-------------------------------- 퀴즈 유형: 객관식
             let obj_options = [];
@@ -461,7 +461,7 @@ function checkData() {
             pushData.push(data);
         } else if (quiz_type === QuizType.SUBJ) {  // <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<-------------------------------- 퀴즈 유형: 주관식
             let subj_answer = $(`${EditDataType.QUIZ.DIV_ID} textarea[name="q_text"]`);
-            let subj_answer_val = subj_answer.val().trim();
+            let subj_answer_val = subj_answer.val();
 
             if (subj_answer_val.length === 0 && solution_img.length === 0) {
                 alert("정답을 텍스트 혹은 이미지로 입력해 주세요.");
