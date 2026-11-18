@@ -1,10 +1,11 @@
 /* 퀴즈 유형 */
 const QuizType = Object.freeze({
     OBJ: "Obj",  // 객관식
-    SUBJ: "Subj"  // 주관식
+    SUBJ: "Subj",  // 주관식
+    NONE: "None"  // 선택 없음
 });
 
-window.QUIZ_TYPE = QuizType.OBJ;
+window.QUIZ_TYPE = QuizType.NONE;
 
 const QuizDataType = Object.freeze({
     QUESTION: "question",  // 문제
@@ -25,13 +26,13 @@ $(document).ready(function() {
     // });
     
     /* 랜더링 */
-    appendImgDiv();  // 이미지 경로 입력용 파일 태그 추가
-    appendAnsInput();  // 객관식 정답 선택지 추가
+    appendQuizDiv();  // 퀴즈 내용 영역 추가
+    // appendImgDiv();  // 이미지 경로 입력용 파일 태그 추가
+    // appendAnsInput();  // 객관식 정답 선택지 추가
 
     // 퀴즈 유형 선택
     $("input[name=quiz_type]").on("click", function() {
         let quiz_type = $(this).val();
-        resetContent();
         clickQuizType(quiz_type);
     });
 
@@ -147,14 +148,18 @@ function clickQuizType(quiz_type=QuizType.OBJ) {
 
     if (quiz_type === QuizType.OBJ) {
         QUIZ_TYPE = QuizType.OBJ;
-        $("#obj_options").show();  // 선택지 입력란 보이기
-        $('#solution #obj_answer').show();  // 객관식 정답지 보이기
-        $('#solution #subj_answer').hide();  // 주관식 정답지 숨기기
+        $("#obj_quiz_content").show();  // 객관식 컨텐츠 영역 보이기
+        $("#subj_quiz_content").hide();  // 주관식 컨텐츠 영역 숨기기
+        // $("#obj_options").show();  // 선택지 입력란 보이기
+        // $('#solution #obj_answer').show();  // 객관식 정답지 보이기
+        // $('#solution #subj_answer').hide();  // 주관식 정답지 숨기기
     } else if (quiz_type === QuizType.SUBJ) {
         QUIZ_TYPE = QuizType.SUBJ;
-        $("#obj_options").hide();
-        $('#solution #obj_answer').hide();  // 객관식 정답지 숨기기
-        $('#solution #subj_answer').show();  // 주관식 정답지 보이기
+        $("#obj_quiz_content").hide();  // 객관식 컨텐츠 영역 숨기기
+        $("#subj_quiz_content").show();  // 주관식 컨텐츠 영역 보이기
+        // $("#obj_options").hide();
+        // $('#solution #obj_answer').hide();  // 객관식 정답지 숨기기
+        // $('#solution #subj_answer').show();  // 주관식 정답지 보이기
     }
 }
 // 페이지 input 및 img 비우기
@@ -162,21 +167,31 @@ function resetContent() {
     let fixedImg = $("button img, #multiSelectSort img, #chapterUL_0 img");
     let fixedInput = $(`#type_code #chapterUl input[type="text"], #chapterUL_0 li`);
     let fixedChkboxNRadio = $('input[name="edit_data_type"], input[name="quiz_type"]');
+    let edit_type = $(`input[name="edit_data_type"]:checked`).val();
+    quizTypeDiv = "";
 
-    let preSelectedRadio = $(`${EDIT_DATA_TYPE.DIV_ID}  #solution #obj_answer input[type=radio]:checked`);
-    if (preSelectedRadio.length > 0) {
-        let preIdx = preSelectedRadio.val() - 1;
-        selectObjOption(preIdx);
-    }
+    if (edit_type === EditDataType.QUIZ.NAME) {
+        if (QUIZ_TYPE === QuizType.OBJ) {
+            quizTypeDiv = "#obj_quiz_content";
+            let preSelectedRadio = $(`${EDIT_DATA_TYPE.DIV_ID}  #solution #obj_answer input[type=radio]:checked`);
+            if (preSelectedRadio.length > 0) {
+                let preIdx = preSelectedRadio.val() - 1;
+                selectObjOption(preIdx);
+            }
 
-    let addOptionInput = $(`${EDIT_DATA_TYPE.DIV_ID} input[name="add_option"]:checked`);
-    if (addOptionInput.length > 0) {
-        addOption5(false);
+            let addOptionInput = $(`${EDIT_DATA_TYPE.DIV_ID} input[name="add_option"]:checked`);
+            if (addOptionInput.length > 0) {
+                addOption5(false);
+            }
+        } else {
+            quizTypeDiv = "#subj_quiz_content";
+        }
     }
-    $(`${EDIT_DATA_TYPE.DIV_ID} img`).not(fixedImg).removeAttr("src").hide();
-    $(`${EDIT_DATA_TYPE.DIV_ID} input[type="text"], ${EDIT_DATA_TYPE.DIV_ID} textarea, ${EDIT_DATA_TYPE.DIV_ID}  input[type="number"]`).not(fixedInput).val("");
-    $(`${EDIT_DATA_TYPE.DIV_ID} input[type="checkbox"], ${EDIT_DATA_TYPE.DIV_ID} input[type="radio"]`).not(fixedChkboxNRadio).prop("checked", false);
-    $(`${EDIT_DATA_TYPE.DIV_ID} input[type="file"]`).each(function(index, element) {
+    console.log(quizTypeDiv);
+    $(`${EDIT_DATA_TYPE.DIV_ID} ${quizTypeDiv} img`).not(fixedImg).removeAttr("src").hide();
+    $(`${EDIT_DATA_TYPE.DIV_ID} ${quizTypeDiv} input[type="text"], ${EDIT_DATA_TYPE.DIV_ID} ${quizTypeDiv} textarea, ${EDIT_DATA_TYPE.DIV_ID} ${quizTypeDiv} input[type="number"]`).not(fixedInput).val("");
+    $(`${EDIT_DATA_TYPE.DIV_ID} ${quizTypeDiv} input[type="checkbox"], ${EDIT_DATA_TYPE.DIV_ID} ${quizTypeDiv} input[type="radio"]`).not(fixedChkboxNRadio).prop("checked", false);
+    $(`${EDIT_DATA_TYPE.DIV_ID} ${quizTypeDiv} input[type="file"]`).each(function(index, element) {
         let clearBtn = $(element).next("button");
         clearFileInput(clearBtn);
     });
@@ -201,26 +216,99 @@ function resizeImage(id, width, height) {
 
 /* 렌더링 */
 // 이미지 파일
-function appendImgDiv() {
-    let quiz_data_type = ["q", "sol"];
-    quiz_data_type.forEach(function(type, idx) {
-        let ImgDivHTML = `<div class="img_input flex-row">
-                                <span>이미지 삽입: </span>
-                                <input type="file" name="${type}_img_src" accept="image/*"/>
-                                <button class="btn red small square" title="이미지 제거" onclick="clearFileInput(this)">X</button>
-                                <div class="img_length flex-row">
-                                    <span>이미지 크기: </span>
-                                    <input type="number" min="0" class="img_length_input width" name="${type}_img_w" placeholder="너비"><span>px</span>
-                                    <b>x</b>
-                                    <input type="number" min="0" class="img_length_input height" name="${type}_img_h" placeholder="높이"><span>px</span>
-                                    <input type="number" min="0" class="img_ratio" name="${type}_img_ratio" hidden/>
-                                    <button class="btn green small square" id="resize_${type}_image" title="이미지 크기 변경" onclick="resizeImage('#resize_quiz_image', $(this).siblings('.width').val(), $(this).siblings('.height').val())">✔</button>
+function appendQuizDiv() {
+    let quiz_types = ['obj', 'subj'];
+    let answer_types = [['question', 'q', '퀴즈'], ['solution', 'sol', '풀이']];
+
+    let ans_span = '<span>정답: </span>';
+
+    quiz_types.forEach(function(q_type) {
+        let quizDivHTML = `<div id='question'>
+        </div>
+        
+        <hr>
+        <div class='flex-column' id='solution'>
+        </div>`;
+        let answerDivHTML = "";
+
+        $(`#${q_type}_quiz_content`).append(quizDivHTML);
+
+        answer_types.forEach(function(ans_type) {
+            let name = ans_type[0], short_name = ans_type[1], kor_name = ans_type[2];
+            let qDivHTML = `<div class="image flex-column"><!-- 이미지 파일 추가 태그 입력할 부분 --></div>
+            <textarea class="focus-event" name="${short_name}_text" placeholder="${kor_name} 내용을 입력해주세요."></textarea>`;
+  
+            $(`#${q_type}_quiz_content #${name}`).append(qDivHTML);
+
+            let ImgDivHTML = `<div class="img_input flex-row">
+                                    <span>이미지 삽입: </span>
+                                    <input type="file" name="${short_name}_img_src" accept="image/*"/>
+                                    <button class="btn red small square" title="이미지 제거" onclick="clearFileInput(this)">X</button>
+                                    <div class="img_length flex-row">
+                                        <span>이미지 크기: </span>
+                                        <input type="number" min="0" class="img_length_input width" name="${short_name}_img_w" placeholder="너비"><span>px</span>
+                                        <b>x</b>
+                                        <input type="number" min="0" class="img_length_input height" name="${short_name}_img_h" placeholder="높이"><span>px</span>
+                                        <input type="number" min="0" class="img_ratio" name="${short_name}_img_ratio" hidden/>
+                                        <button class="btn green small square" id="resize_${short_name}_image" title="이미지 크기 변경" onclick="resizeImage('#resize_${short_name}_image', $(this).siblings('.width').val(), $(this).siblings('.height').val())">✔</button>
+                                    </div>
                                 </div>
-                            </div>
-                            <img id="${type}_img" src="" alt="퀴즈 사진">`;
-        $(`${EditDataType.QUIZ.DIV_ID} .image`).eq(idx).append(ImgDivHTML);
+                                <img id="${short_name}_img" src="" alt="퀴즈 사진">`;
+            $(`${EditDataType.QUIZ.DIV_ID} #${q_type}_quiz_content #${name} .image`).append(ImgDivHTML);
+        });
+
+        if (q_type === 'obj') {
+            let obj_options = `<div id="obj_options">
+                <!-- 선택지 1 ~ 4번 들어갈 부분 -->
+                <div class="last_option op_group flex-row">
+                    <input type="checkbox" class="check_input" name="add_option" value="add_option"/><span class="checkInput_info left"> 선택지 추가</span> 
+                    <!-- 선택지 5번 들어갈 부분 -->
+                </div>
+            </div>`;
+            $(`#obj_quiz_content #question`).append(obj_options);
+
+            answerDivHTML = `<div class="flex-row">
+                ${ans_span}
+                <div id="obj_answer" class="flex-row"><!-- 정답 선택지 1 ~ 5번 들어갈 부분 --></div>
+            </div>`;
+        } else {
+            answerDivHTML = `${ans_span}
+                <textarea id="subj_answer" class="focus-event" name="subj_answer" placeholder="정답을 입력해 주세요."></textarea>`;
+        }
+
+        $(`#${q_type}_quiz_content #solution`).prepend(answerDivHTML);
+
     });
+
+    appendAnsInput();
 }
+
+// function appendImgDiv() {
+//     quiz_area = (QUIZ_TYPE === QuizType.OBJ) ? "#obj_quiz_content" : "#subj_quiz_content";
+
+//     let quiz_data_type = ["q", "sol"];
+//     let quiz_type_id = ['#obj_quiz_content', '#subj_quiz_content'];
+//     quiz_data_type.forEach(function(type, idx) {
+//         let ImgDivHTML = `<div class="img_input flex-row">
+//                                 <span>이미지 삽입: </span>
+//                                 <input type="file" name="${type}_img_src" accept="image/*"/>
+//                                 <button class="btn red small square" title="이미지 제거" onclick="clearFileInput(this)">X</button>
+//                                 <div class="img_length flex-row">
+//                                     <span>이미지 크기: </span>
+//                                     <input type="number" min="0" class="img_length_input width" name="${type}_img_w" placeholder="너비"><span>px</span>
+//                                     <b>x</b>
+//                                     <input type="number" min="0" class="img_length_input height" name="${type}_img_h" placeholder="높이"><span>px</span>
+//                                     <input type="number" min="0" class="img_ratio" name="${type}_img_ratio" hidden/>
+//                                     <button class="btn green small square" id="resize_${type}_image" title="이미지 크기 변경" onclick="resizeImage('#resize_quiz_image', $(this).siblings('.width').val(), $(this).siblings('.height').val())">✔</button>
+//                                 </div>
+//                             </div>
+//                             <img id="${type}_img" src="" alt="퀴즈 사진">`;
+//         quiz_type_id.forEach(function(quiz_id) {
+//             $(`${EditDataType.QUIZ.DIV_ID} ${quiz_id} .image`).eq(idx).append(ImgDivHTML);
+//         });
+        
+//     });
+// }
 
 // 정답 선택지
 function appendAnsInput() {
@@ -228,7 +316,7 @@ function appendAnsInput() {
 
     unCheckedNums.forEach(function(opNum, idx) {
         let objAnsHTML = `<input type="radio" class="check_input" name="obj_answer" value="${idx+1}" hidden/><span class="checkInput_info left">${opNum}</span>`;
-        $(`${EditDataType.QUIZ.DIV_ID} #solution #obj_answer`).append(objAnsHTML);
+        $(`${EditDataType.QUIZ.DIV_ID} #obj_quiz_content #solution #obj_answer`).append(objAnsHTML);
     });
 
     for (let i=1; i <= 5; i++) {
@@ -236,9 +324,11 @@ function appendAnsInput() {
         objOptionHTML = `<div class="${className} flex-row"><span>${i}. </span><input type="text" class="quiz_op focus-event" name="obj_op${i}" placeholder="선택지 ${i}"></div>`;
 
         if (i == 5) {
-            $(`${EditDataType.QUIZ.DIV_ID} #obj_options .last_option`).append(objOptionHTML);
-            break;
+            $(`${EditDataType.QUIZ.DIV_ID} #obj_quiz_content #obj_options .last_option`).append(objOptionHTML);
+        } else {
+            $(`${EditDataType.QUIZ.DIV_ID} #obj_quiz_content #obj_options .last_option`).before(objOptionHTML);
         }
-        $(`${EditDataType.QUIZ.DIV_ID} #obj_options .last_option`).before(objOptionHTML);
     }
+    
+    clickQuizType(QuizType.OBJ);  // 퀴즈 유형에 따라 컨텐츠 영역 보이기/숨기기
 }

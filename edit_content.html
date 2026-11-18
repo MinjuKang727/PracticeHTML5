@@ -97,29 +97,8 @@
                     <input type="radio" class="check_input" name="quiz_type" value="Obj" checked/><span  class="checkInput_info left"> 객관식</span>
                     <input type="radio" class="check_input" name="quiz_type" value="Subj"/><span class="checkInput_info left"> 주관식</span>
                 </div>
-                <div id="question">
-                    <div class="image flex-column"><!-- 이미지 파일 추가 태그 입력할 부분 --></div>
-                    <textarea class="focus-event" name="q_text" placeholder="퀴즈 내용을 입력해주세요."></textarea>
-                </div>
-                
-
-                <div id="obj_options">
-                    <!-- 선택지 1 ~ 4번 들어갈 부분 -->
-                    <div class="last_option op_group flex-row">
-                        <input type="checkbox" class="check_input" name="add_option" value="add_option"/><span class="checkInput_info left"> 선택지 추가</span> 
-                        <!-- 선택지 5번 들어갈 부분 -->
-                    </div>
-                </div>
-                <hr>
-                <div class="flex-column" id="solution">
-                    <div class="flex-row">
-                    <span>정답: </span>
-                    <div id="obj_answer" class="flex-row"><!-- 정답 선택지 1 ~ 5번 들어갈 부분 --></div>
-                    </div>
-                    <textarea id="subj_answer" class="focus-event" name="subj_answer" placeholder="정답을 입력해 주세요."></textarea>
-                    <div class="image flex-column"><!-- 이미지 파일 추가 태그 입력할 부분 --></div>
-                    <textarea name="sol_text" class="focus-event" placeholder="풀이를 입력해 주세요."></textarea>
-                </div>
+                <div id="obj_quiz_content"><!--객관식 퀴즈 내용 영역 --></div>
+                <div id="subj_quiz_content"><!--주관식 퀴즈 내용 영역 --></div>
             </div>
             <div class="flex-row">
                 <button class="btn orange long lectangle" id="saveContent" onclick="saveContent()" title="입력한 내용을 저장합니다.">저장</button>

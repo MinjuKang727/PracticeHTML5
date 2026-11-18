@@ -137,7 +137,7 @@ $(document).ready(function() {
         $.each(EditDataType, function(key, value) {
             if (value.NAME === edit_data_type) {
                 EDIT_DATA_TYPE = EditDataType[key];
-                resetContent();
+                // resetContent();
                 $(`${EDIT_DATA_TYPE.DIV_ID} li`).remove();
                 renderChapterList();
                 $(`${EDIT_DATA_TYPE.DIV_ID}`).show();
@@ -202,7 +202,7 @@ function renderChapterList(idx=0, parentID=0) {
 
     // 앞 단원의 하위 단원만 필터링해서 정렬
     
-    console.log(EditDataType.CATEGORY.DATA.length);
+    // console.log(EditDataType.CATEGORY.DATA.length);
     let curTitleList  = EditDataType.CATEGORY.DATA.filter(item => item.parentID === parentID)
                                 .sort((a, b) => b.nthChild - a.nthChild);
 
