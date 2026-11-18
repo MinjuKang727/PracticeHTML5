@@ -446,7 +446,7 @@ function checkData() {
             pushData.push(data);
         }     
     }
-
+    console.log("pushData:", pushData);
     return pushData;
 }
 

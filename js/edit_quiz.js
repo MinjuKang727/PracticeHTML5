@@ -107,14 +107,18 @@ $(document).ready(function() {
 // 선택지 추가 이벤트
 function addOption5(checkStatus) {
     let lastOptionInput = $(".last_option_input");
+    let lastOptionAns = $(".last_opt_ans");
+
     if (checkStatus) {
         lastOptionInput.show();
         $(`#obj_options input[name="obj_op5"]`).focus();
         lastOptionInput.prev('span').hide();
+        lastOptionAns.show();
     } else {
         lastOptionInput.children('input[type=text]').val("");
         lastOptionInput.hide();
         lastOptionInput.prev('span').show();
+        lastOptionAns.hide();
     }
 }
 
@@ -122,20 +126,25 @@ function addOption5(checkStatus) {
 let unCheckedNums = ["①", "②", "③", "④", "⑤"];
 let checkedNums = ["❶", "❷", "❸", "❹", "❺"];
 // 퀴즈 정답 선택지 선택 이벤트
-function selectObjOption(preIdx, checkedIdx=5) {
-    console.log(preIdx, checkedIdx);
+function selectObjOption(preIdx, checkedIdx) {
     let preElement = $("#solution #obj_answer span").eq(preIdx);
     let checkedElement = $("#solution #obj_answer span").eq(checkedIdx);
 
+    let ischecked = checkedElement.prev("input[type=radio]").is(":checked");
+    checkedElement.prev("input[type=radio]").prop("checked", !ischecked);
+
     if (checkedIdx != preIdx) {
+        preElement.prev("input[type=radio]").prop("checked", false);
+        preElement.text(unCheckedNums[preIdx]);
+        preElement.css("color", "#000");    
+        checkedElement.text(checkedNums[checkedIdx]);
+        checkedElement.css("color", "#468aff");
+    } else if (ischecked){
         preElement.text(unCheckedNums[preIdx]);
         preElement.css("color", "#000");
-
-        if (checkedIdx < 5) {
-            checkedElement.prev("input[type=radio]").prop("checked", true);
-            checkedElement.text(checkedNums[checkedIdx]);
-            checkedElement.css("color", "#468aff");
-        }
+    } else {
+        checkedElement.text(checkedNums[checkedIdx]);
+        checkedElement.css("color", "#468aff");
     }
 }
 
@@ -316,11 +325,14 @@ function appendAnsInput() {
 
     unCheckedNums.forEach(function(opNum, idx) {
         let objAnsHTML = `<input type="radio" class="check_input" name="obj_answer" value="${idx+1}" hidden/><span class="checkInput_info left">${opNum}</span>`;
+        if (idx == unCheckedNums.length - 1) {
+            objAnsHTML = `<div class="last_opt_ans flex-row" style="display: none;">${objAnsHTML}</div>`;
+        }
         $(`${EditDataType.QUIZ.DIV_ID} #obj_quiz_content #solution #obj_answer`).append(objAnsHTML);
     });
 
-    for (let i=1; i <= 5; i++) {
-        let className = (i < 5) ? "op_group" : "last_option_input";
+    for (let i=1; i <= unCheckedNums.length; i++) {
+        let className = (i < unCheckedNums.length) ? "op_group" : "last_option_input";
         objOptionHTML = `<div class="${className} flex-row"><span>${i}. </span><input type="text" class="quiz_op focus-event" name="obj_op${i}" placeholder="선택지 ${i}"></div>`;
 
         if (i == 5) {
